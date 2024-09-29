@@ -1,0 +1,8 @@
+#material file
+version=0.1
+name=light_materials
+diffuse_color=1.0 1.0 1.0 1.0
+diffuse_map_name=paving2
+specular_map_name=paving2_SPEC
+shineness=256.0
+type=light

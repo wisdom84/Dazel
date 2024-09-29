@@ -1,0 +1,9 @@
+#material file
+version=0.1
+name=test_materials
+diffuse_color=1.0 1.0 1.0 1.0
+diffuse_map_name=orange_lines_512
+specular_map_name=orange_lines_512_SPEC
+shineness=32.0
+type=world
+shader_name=built_in_shader
