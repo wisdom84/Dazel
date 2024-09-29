@@ -119,7 +119,7 @@ bool application_create(game*game_inst){
    // initialize our resource system
    resource_system_config resource_config;
    resource_config.max_loader_count = 32;
-   const char*base_path = "C:\\dazel\\Dazel\\code\\Dazel-game-engine\\bin";
+   const char*base_path = "C:\\Dazel_project\\Dazel\\code\\Dazel-game-engine\\bin";
    if(_chdir(base_path) != 0){
       DINFO("sorry could not change the directory path to the bin foleder");
    }
