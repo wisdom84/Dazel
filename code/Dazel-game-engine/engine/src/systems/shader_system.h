@@ -23,6 +23,7 @@ typedef struct material_shader_reference{
     u64 reference_id;
     bool is_in_use;
     u32 generation;
+    u32 reference_count;
 }material_shader_reference;
 
 typedef struct material_shader
