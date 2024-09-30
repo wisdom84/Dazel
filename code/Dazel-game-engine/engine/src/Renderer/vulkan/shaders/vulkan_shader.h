@@ -201,9 +201,11 @@ bool vulkan_shader_release_instance_resources(vulkan_shader *shader, u32 out_ins
 
 u32 vulkan_shader_uniform_location(vulkan_shader *shader, const char *uniform_name);
 
+u32 vulkan_shader_get_uniform_size(vulkan_shader*shader, u32 location);
+
 bool check_uniform_size(vulkan_shader *shader, u32 location, u32 expected_size);
 
-bool vulkan_shader_set_sampler(vulkan_shader *shader, u32 location, Texture *t);
+bool vulkan_shader_set_sampler(vulkan_shader *shader, u32 location, Texture*t);
 
 bool set_uniform(vulkan_shader *shader, u32 location, void *value, u32 size);
 
@@ -217,18 +219,18 @@ bool vulkan_shader_set_uniform_u16(vulkan_shader *shader, u32 location, u16 valu
 
 bool vulkan_shader_set_uniform_u32(vulkan_shader *shader, u32 location, u32 value);
 
-bool vulkan_shader_set_uniform_f32(vulkan_shader *shader, u32 location, float value);
+bool vulkan_shader_set_uniform_f32(vulkan_shader *shader, u32 location, void*value);
 
-bool vulkan_shader_set_uniform_vec2(vulkan_shader *shader, u32 location, vec2 value);
+bool vulkan_shader_set_uniform_vec2(vulkan_shader *shader, u32 location, void*value);
 
 bool vulkan_shader_set_uniform_vec2f(vulkan_shader *shader, u32 location, float value_0, float value_1);
 
-bool vulkan_shader_set_uniform_vec3(vulkan_shader *shader, u32 location, vec3 value);
+bool vulkan_shader_set_uniform_vec3(vulkan_shader *shader, u32 location, void*value);
 
 bool vulkan_shader_set_uniform_vec3f(vulkan_shader *shader, u32 location, float value_0, float value_1, float value_2);
 
-bool vulkan_shader_set_uniform_vec4(vulkan_shader *shader, u32 location, vec4 value);
+bool vulkan_shader_set_uniform_vec4(vulkan_shader *shader, u32 location, void*value);
 
 bool vulkan_shader_set_uniform_vec4f(vulkan_shader *shader, u32 location, float value_0, float value_1, float value_2, float value_3);
 
-bool vulkan_shader_set_uniform_mat4(vulkan_shader *shader, u32 location, mat4 value);
+bool vulkan_shader_set_uniform_mat4(vulkan_shader *shader, u32 location, void*value);

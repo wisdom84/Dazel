@@ -22,6 +22,7 @@ typedef struct renderer_system_state{
    float near_clip;
    float far_clip;
    bool active[MAX_SHADER_INSTANCE];
+   global_uniform_object global_ubo;
 }renderer_system_state;
 
 renderer_backend*backend=0;
@@ -46,11 +47,16 @@ bool renderer_initialize(const char*application_name, struct platform_state*plat
       state_ptr->view =mat4_homogeneous_translation(0.0f,0.0f,4.0f);
       state_ptr->view= mat4_inverse(state_ptr->view);
 
+   
+      state_ptr->global_ubo.projection = mat4_perspective(45.0f,900.f/600.f,0.1f,1000.f);
+      state_ptr->global_ubo.view = mat4_homogeneous_translation(0.0f,0.0f,4.0f);
+      state_ptr->global_ubo.view =  mat4_inverse(state_ptr->global_ubo.view);
+      state_ptr->global_ubo.ambient_color = vec4_create(0.25f, 0.25f,0.25f,1.0f);
       // UI shader projection and view 
     	// state_ptr->UI_projection = mat4_orthographic_proj(1.0f,-1.0f,1.0f,-1.0f,0.1f,100.0f);
       state_ptr->UI_projection = mat4_orthographic_proj(0.0f,(float)width,  (float)height, 0.0f, -100.0f, 100.0f);
       state_ptr->UI_view = dlm::mat4_inverse(dlm::mat4_identity());
-
+      state_ptr->ambient_color = dlm::vec4_create(0.25f,0.25f,0.25f,1.0f);
       // ivalidate all active shaders 
       for(u32 i=0; i<MAX_SHADER_INSTANCE; i++){
         state_ptr->active[i] = false;
@@ -80,7 +86,7 @@ bool renderer_draw_frame(render_packet*packet){
          } 
         for(u32 i=0; i < MAX_SHADER_INSTANCE; i++){
              if(state_ptr->active[i]){
-                  backend->update_global_state(state_ptr->projection,state_ptr->view, state_ptr->camera_position, state_ptr->ambient_color,0,packet->delta_time,i);
+                  backend->update_global_state(state_ptr->projection,state_ptr->view, state_ptr->camera_position, state_ptr->ambient_color,0,packet->delta_time, &state_ptr->global_ubo, i);
              }   
         }
 
@@ -158,6 +164,9 @@ void renderer_destroy_geometry(geometry*geometry){
 void renderer_set_view(mat4 view, vec3 camera_position){
    state_ptr->view = view;
    state_ptr->camera_position = camera_position;
+   state_ptr->global_ubo.view = view;
+   
+   state_ptr->global_ubo.camera_position = vec4_create(camera_position.x,camera_position.y,camera_position.z,1.0);
 }
 void renderer_activate_shader(u32 id, bool is_active){
   state_ptr->active[id]= is_active;

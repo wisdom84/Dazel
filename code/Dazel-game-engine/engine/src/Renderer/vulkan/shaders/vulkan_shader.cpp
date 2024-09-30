@@ -762,15 +762,17 @@ u32 vulkan_shader_uniform_location(vulkan_shader *shader, const char *uniform_na
     return location;
 };
 
-bool vulkan_shader_set_sampler(vulkan_shader *shader, u32 location, Texture *t)
+bool vulkan_shader_set_sampler(vulkan_shader *shader, u32 location, Texture*t)
 {
     vulkan_uniform_lookup_entry *entry = &shader->uniforms[location];
     if (entry->scope == SHADER_SCOPE_GLOBAL)
     {
+     
         shader->global_texture[entry->location] = t;
     }
     else
     {
+    
         shader->instance_state[shader->bound_instance_id].instance_texture[entry->location] = t;
     }
     return true;
@@ -785,6 +787,11 @@ bool check_uniform_size(vulkan_shader *shader, u32 location, u32 expected_size)
         return false;
     }
     return true;
+}
+
+u32 vulkan_shader_get_uniform_size(vulkan_shader*shader, u32 location){
+     vulkan_uniform_lookup_entry *entry = &shader->uniforms[location];
+     return entry->size;
 }
 
 bool set_uniform(vulkan_shader *shader, u32 location, void *value, u32 size)
@@ -843,13 +850,13 @@ bool vulkan_shader_set_uniform_u32(vulkan_shader *shader, u32 location, u32 valu
     return set_uniform(shader, location, &value, size);
 };
 
-bool vulkan_shader_set_uniform_f32(vulkan_shader *shader, u32 location, float value)
+bool vulkan_shader_set_uniform_f32(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(float);
-    return set_uniform(shader, location, &value, size);
+    return set_uniform(shader, location, value, size);
 }
 
-bool vulkan_shader_set_uniform_vec2(vulkan_shader *shader, u32 location, vec2 value)
+bool vulkan_shader_set_uniform_vec2(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(vec2);
     return set_uniform(shader, location, &value, size);
@@ -862,7 +869,7 @@ bool vulkan_shader_set_uniform_vec2f(vulkan_shader *shader, u32 location, float 
     return set_uniform(shader, location, &value, size);
 };
 
-bool vulkan_shader_set_uniform_vec3(vulkan_shader *shader, u32 location, vec3 value)
+bool vulkan_shader_set_uniform_vec3(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(vec3);
     return set_uniform(shader, location, &value, size);
@@ -875,10 +882,10 @@ bool vulkan_shader_set_uniform_vec3f(vulkan_shader *shader, u32 location, float 
     return set_uniform(shader, location, &value, size);
 };
 
-bool vulkan_shader_set_uniform_vec4(vulkan_shader *shader, u32 location, vec4 value)
+bool vulkan_shader_set_uniform_vec4(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(vec4);
-    return set_uniform(shader, location, &value, size);
+    return set_uniform(shader, location, value, size);
 };
 
 bool vulkan_shader_set_uniform_vec4f(vulkan_shader *shader, u32 location, float value_0, float value_1, float value_2, float value_3)
@@ -887,10 +894,10 @@ bool vulkan_shader_set_uniform_vec4f(vulkan_shader *shader, u32 location, float 
     vec4 value = (vec4){value_0, value_1, value_2, value_3};
     return set_uniform(shader, location, &value, size);
 };
-bool vulkan_shader_set_uniform_mat4(vulkan_shader *shader, u32 location, mat4 value)
+bool vulkan_shader_set_uniform_mat4(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(mat4);
-    return set_uniform(shader, location, &value, size);
+    return set_uniform(shader, location, value, size);
 };
 
 bool create_module(vulkan_shader *shader, vulkan_shader_stage_config config, vulkan_shader_stage_new *shader_stage)

@@ -266,7 +266,10 @@ namespace dlm
 
 	typedef struct Vertex_3d{
         vec3 position;
-		vec2 texture_cord;  
+		vec2 texture_cord; 
+		vec3 normal; 
+		// vec4 color;
+		// vec4 tangent;
 	}Vertex_3d;
     
 	typedef struct Vertex_2d{

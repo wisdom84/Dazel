@@ -31,9 +31,9 @@ void camera_pitch(game_state*state,float amount){
  bool game_initialize(struct game*game_inst){
     DDEBUG("game initialization called");
     game_state*state = (game_state*)game_inst->state;
-    state->camera_position = vec3_create(0.0f,0.0f,4.0f);
+    state->camera_position = vec3_create(0.0f,0.0f,25.0f);
     state->camera_euler = vec3_zero();
-    state->view = mat4_homogeneous_translation(0.0f,0.0f,4.0f);
+    state->view = mat4_homogeneous_translation(0.0f,0.0f,25.0f);
     state->view = mat4_inverse(state->view);
     state->camera_view_dirty = true;
    return true;

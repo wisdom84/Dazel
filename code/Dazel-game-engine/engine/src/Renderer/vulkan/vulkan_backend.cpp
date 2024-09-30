@@ -39,14 +39,14 @@ void create_command_buffers(renderer_backend *backend);
 void regenerate_framebuffers(renderer_backend *backend, vulkan_frame_buffers *frame_buffers, vulkan_renderpass *renderpass, u64 attachment_count, VkImageView *attachments);
 bool recreate_swapchain(renderer_backend *backend);
 bool create_buffers(vulkan_context *context);
-void set_shader_attribute_types ();
-void add_uniform(vulkan_shader*shader, shader_scope scope, const char*type, const char*name, u32*out_location);
-shader_attribute_type change_str_to_enum(const char*str);
-void add_shader_property(const char*property_name, material_shader_config config, vulkan_shader*shader,material_shader*material_shader);
-void set_uniform(vulkan_shader*shader, const char*type,u32 location, void*value);
+void set_shader_attribute_types();
+void add_uniform(vulkan_shader *shader, shader_scope scope, const char *type, const char *name, u32 *out_location);
+shader_attribute_type change_str_to_enum(const char *str);
+void add_shader_property(const char *property_name, material_shader_config config, vulkan_shader *shader, material_shader *material_shader);
+void set_uniform(vulkan_shader *shader, const char *type, u32 location, void *value);
 VkShaderStageFlagBits set_shader_stages(char stages[][MAX_STAGE_NAME_LENGTH], u32 stage_count);
-#define ADD_UNIFORM(shader,scope,type, name, location) add_uniform(shader,scope,type, name, location);
-#define SET_UNIFORM(shader,type,location,value) set_uniform(shader,type,location,value);
+#define ADD_UNIFORM(shader, scope, type, name, location) add_uniform(shader, scope, type, name, location);
+#define SET_UNIFORM(shader, type, location, value) set_uniform(shader, type, location, value);
 // bool create_UI_buffers(vulkan_context *context);
 
 bool upload_data_range(vulkan_context *context, VkCommandPool pool, VkFence fence, VkQueue queue, vulkan_buffer *buffer, u64 *offset, u64 size, const void *data)
@@ -262,7 +262,8 @@ bool vulkan_backend_initialize(struct renderer_backend *backend, const char *app
           context.images_in_flight[i] = 0;
      }
      DINFO("synchronization objects created successfully");
-     for(u32 i=0; i < VULKAN_MAX_SHADER; i++){
+     for (u32 i = 0; i < VULKAN_MAX_SHADER; i++)
+     {
           context.shaders[i].internal_id = INVALID_ID;
      }
 
@@ -281,45 +282,43 @@ bool vulkan_backend_initialize(struct renderer_backend *backend, const char *app
      return true;
 };
 
-void set_shader_attribute_types (){
-  const char*array[]{
-  "FLOAT32",
-  "FLOAT32_2",
-  "FLOAT32_3",
-  "FLOAT32_4",
-  "INT8",
-  "INT8_2",
-  "INT8_3",
-  "INT8_4",
-  "UINT8",
-  "UINT8_2",
-  "UINT8_3",
-  "UINT8_4",
-  "INT16",
-  "INT16_2",
-  "INT16_3",
-  "INT16_4",
-  "UINT16",
-  "UINT16_2",
-  "UINT16_3",
-  "UINT16_4",
-  "INT32",
-  "INT32_2",
-  "INT32_3",
-  "INT32_4",
-  "UINT32",
-  "UINT32_2",
-  "UINT32_3",
-  "UINT32_4"
- };
- for(u32 i=0; i < 28; i++){
-    string_copy(context.array[i].str_variant,array[i]);
-    context.array[i].value =(shader_attribute_type)(SHADER_ATTRIBUTE_TYPE_FLOAT32 + i);
- }
-
+void set_shader_attribute_types()
+{
+     const char *array[]{
+         "FLOAT32",
+         "FLOAT32_2",
+         "FLOAT32_3",
+         "FLOAT32_4",
+         "INT8",
+         "INT8_2",
+         "INT8_3",
+         "INT8_4",
+         "UINT8",
+         "UINT8_2",
+         "UINT8_3",
+         "UINT8_4",
+         "INT16",
+         "INT16_2",
+         "INT16_3",
+         "INT16_4",
+         "UINT16",
+         "UINT16_2",
+         "UINT16_3",
+         "UINT16_4",
+         "INT32",
+         "INT32_2",
+         "INT32_3",
+         "INT32_4",
+         "UINT32",
+         "UINT32_2",
+         "UINT32_3",
+         "UINT32_4"};
+     for (u32 i = 0; i < 28; i++)
+     {
+          string_copy(context.array[i].str_variant, array[i]);
+          context.array[i].value = (shader_attribute_type)(SHADER_ATTRIBUTE_TYPE_FLOAT32 + i);
+     }
 }
-
-
 
 void vulkan_backend_shutdown(struct renderer_backend *backend)
 {
@@ -495,35 +494,36 @@ bool vulkan_backend_begin_frame(struct renderer_backend *backend, float delta_ti
      context.light_renderpass.h = context.swapchain.extent.height;
      return true;
 };
-void vulkan_renderer_update_global_state(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color, int mode, float delta_time, u32 shader_id)
+void vulkan_renderer_update_global_state(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color, int mode, float delta_time, global_uniform_object*object, u32 shader_id)
 {
-     material_shader shader;
-     shader_system_get_shader_by_id(shader_id,&shader);
-     vulkan_shader*internal_data= (vulkan_shader*)shader.internal_data;
-     vulkan_shader_use(&context.shaders[internal_data->internal_id]);
-     vulkan_shader_bind_globals(&context.shaders[internal_data->internal_id]);
-     for(u32 i=0; i < shader.config.uniform_count; i++){
-          u32 location;
-          if(string_equal(shader.config.uniform_scope[i], "GLOBAL")){
-                   if(string_equal(shader.config.uniform_names[i],"projection")){
-                    location =vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id],shader.config.uniform_names[i]);
-                     SET_UNIFORM(&context.shaders[internal_data->internal_id],shader.config.uniform_type[i],location,&projection);
-                   }
-                   else if(string_equal(shader.config.uniform_names[i],"view")){
-                      location =vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id],shader.config.uniform_names[i]);
-                      SET_UNIFORM(&context.shaders[internal_data->internal_id],shader.config.uniform_type[i],location,&view);
-                   }
-          };
-     }
-     vulkan_shader_apply_globals(&context.shaders[internal_data->internal_id]);
+          material_shader shader;
+          shader_system_get_shader_by_id(shader_id, &shader);
+          vulkan_shader *internal_data = (vulkan_shader *)shader.internal_data;
+          vulkan_shader_use(&context.shaders[internal_data->internal_id]);
+          vulkan_shader_bind_globals(&context.shaders[internal_data->internal_id]);
+          global_uniform_object*data=object;
+          u32 offset = 0;
+          for (u32 i = 0; i < shader.config.uniform_count; i++)
+          {
+                    u32 location;
+                    u32 size;
+                    if (string_equal(shader.config.uniform_scope[i], "GLOBAL"))
+                    {
+                              location = vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id], shader.config.uniform_names[i]);
+                              size =vulkan_shader_get_uniform_size(&context.shaders[internal_data->internal_id], location);
+                              SET_UNIFORM(&context.shaders[internal_data->internal_id], shader.config.uniform_type[i], location, (char*)data+offset);
+                              offset += size;
+                    };
+          }
+         vulkan_shader_apply_globals(&context.shaders[internal_data->internal_id]);
 }
 void vulkan_renderer_update_light_global_state(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color, int mode, float delta_time)
 {
-     context.light_shader.global_ubo.projection = projection;
-     context.light_shader.global_ubo.view = view;
-     context.light_shader.global_ubo.view_position = view_position;
-     context.light_shader.global_ubo.ambient_color = ambient_color;
-     vulkan_shader_object_update_global_state(&context, &context.light_shader, delta_time);
+     // context.light_shader.global_ubo.projection = projection;
+     // context.light_shader.global_ubo.view = view;
+     // context.light_shader.global_ubo.view_position = view_position;
+     // context.light_shader.global_ubo.ambient_color = ambient_color;
+     // vulkan_shader_object_update_global_state(&context, &context.light_shader, delta_time);
 }
 
 void vulkan_renderer_update_UI_global_state(mat4 projection, mat4 view, int mode, float delta_time)
@@ -1051,47 +1051,58 @@ void vulkan_renderer_draw_geometry(geometry_render_data data)
 
      // test code
      // binds the pipeline to the graphics bind point
-
+     uniform_object ubo;
      materials *material;
-     bool apply_material;
+     // bool apply_material;
      if (data.geo_obj->material)
      {
           material = data.geo_obj->material;
-          apply_material = data.geo_obj->apply_material;
+          // apply_material = data.geo_obj->apply_material;
      }
      else
      {
           material = material_system_get_default_material();
-          apply_material = data.geo_obj->apply_material;
+          // apply_material = data.geo_obj->apply_material;
      }
+     ubo.model = data.model;
+     ubo.diffuse_color = material->diffuse_color;
+     ubo.shineness = material->shineness;
      // applying the material
      material_shader shader;
-     shader_system_get_shader_by_id(material->shader_id,&shader);
-     vulkan_shader*internal_data= (vulkan_shader*)shader.internal_data;
+     shader_system_get_shader_by_id(material->shader_id, &shader);
+     vulkan_shader *internal_data = (vulkan_shader *)shader.internal_data;
      vulkan_shader_bind_instance(&context.shaders[internal_data->internal_id], material->id);
-     for(u32 i=0; i < shader.config.uniform_count; i++){
+      uniform_object*ubo_data = &ubo;
+      u32 ubo_offset = 0;
+     for (u32 i = 0; i < shader.config.uniform_count; i++)
+     {
           u32 location;
-          if(string_equal(shader.config.uniform_scope[i], "LOCAL")){
-                   if(string_equal(shader.config.uniform_names[i],"model")){
-                     location =vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id],shader.config.uniform_names[i]);
-                     SET_UNIFORM(&context.shaders[internal_data->internal_id],shader.config.uniform_type[i],location,&data.model);
-                   }
+          u32 size;
+          if (string_equal(shader.config.uniform_scope[i], "LOCAL"))
+          {
+                    location = vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id], shader.config.uniform_names[i]);
+                    size =vulkan_shader_get_uniform_size(&context.shaders[internal_data->internal_id],location);
+                    SET_UNIFORM(&context.shaders[internal_data->internal_id], shader.config.uniform_type[i], location, (char*)ubo_data+ubo_offset);
+                    ubo_offset += size;       
           }
-          else if (string_equal(shader.config.uniform_scope[i], "INSTANCE")){
-                if(string_equal(shader.config.uniform_names[i],"diffuse_color")){
-                     location =vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id],shader.config.uniform_names[i]);
-                     SET_UNIFORM(&context.shaders[internal_data->internal_id],shader.config.uniform_type[i],location,&material->diffuse_color);
-                   } 
-                   
-          }    
+          else if (string_equal(shader.config.uniform_scope[i], "INSTANCE"))
+          {
+                  location = vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id], shader.config.uniform_names[i]);
+                  size =vulkan_shader_get_uniform_size(&context.shaders[internal_data->internal_id],location);
+                  SET_UNIFORM(&context.shaders[internal_data->internal_id], shader.config.uniform_type[i], location, (char*)ubo_data+ubo_offset);
+                  ubo_offset += size; 
+          }
      }
-     for(u32 i=0; i < shader.config.sampler_count; i++){
+     Texture*textures[shader.config.sampler_count];
+     textures[0] = material->diffuse_map.texture;
+     textures[1] = material->specular_map.texture;
+     for (u32 i = 0; i < shader.config.sampler_count; i++)
+     {
           u32 location;
-           if(string_equal(shader.config.sampler_scope[i],"INSTANCE")){
-                   if(string_equal(shader.config.sampler_name[i],"diffuse_texture")){
-                      location =vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id],shader.config.sampler_name[i]);
-                      vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id],location,material->diffuse_map.texture);
-                   } 
+          if (string_equal(shader.config.sampler_scope[i], "INSTANCE"))
+          {
+                    location = vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id], shader.config.sampler_name[i]);
+                    vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id], location, textures[i]);
           }
      }
      vulkan_shader_apply_instance(&context.shaders[internal_data->internal_id]);
@@ -1113,203 +1124,239 @@ void vulkan_renderer_draw_geometry(geometry_render_data data)
      }
 }
 
-VkShaderStageFlagBits set_shader_stages(char stages[4][MAX_STAGE_NAME_LENGTH], u32 stage_count){
+VkShaderStageFlagBits set_shader_stages(char stages[4][MAX_STAGE_NAME_LENGTH], u32 stage_count)
+{
      VkShaderStageFlagBits shader_stages = VK_SHADER_STAGE_VERTEX_BIT;
-     for(u32 i=0; i < stage_count; i++){
-         if(string_equal(stages[i], "fragment")){
-             shader_stages = (VkShaderStageFlagBits)(shader_stages | VK_SHADER_STAGE_FRAGMENT_BIT);
-         }
-         else if(string_equal(stages[i], "geometry")){
-          shader_stages = (VkShaderStageFlagBits)(shader_stages | VK_SHADER_STAGE_GEOMETRY_BIT);
-         }
+     for (u32 i = 0; i < stage_count; i++)
+     {
+          if (string_equal(stages[i], "fragment"))
+          {
+               shader_stages = (VkShaderStageFlagBits)(shader_stages | VK_SHADER_STAGE_FRAGMENT_BIT);
+          }
+          else if (string_equal(stages[i], "geometry"))
+          {
+               shader_stages = (VkShaderStageFlagBits)(shader_stages | VK_SHADER_STAGE_GEOMETRY_BIT);
+          }
      }
      return shader_stages;
 }
 
-bool vulkan_create_material_shader(struct material_shader*shader){
-     if(!shader){
+bool vulkan_create_material_shader(struct material_shader *shader)
+{
+     if (!shader)
+     {
           DERROR("invalid shader object was passed to the backend ");
           return false;
      }
-    VkShaderStageFlagBits stages;
-    if(shader->config.stage_count > 0 && shader->config.stage_names[0]){
-       stages = set_shader_stages(shader->config.stage_names, shader->config.stage_count);
-    }
-    else{
-      DERROR("shader must have a list one shader stage for shader to be created");
-      return false;
-    }
-    // initialize the shader
-   for(u32 i=0; i < VULKAN_MAX_SHADER; i++){
-     if(context.shaders[i].internal_id == INVALID_ID){
-         if(string_equal(shader->config.renderpass,"mainrenderpass")){
-             if(!vulkan_shader_create(&context, shader->name,&context.main_renderpass,stages, 1024, shader->use_instance,shader->use_push_constants, &context.shaders[i])){
-               DERROR("vulkan failed to initialize internal_data for shader");
-               return false;
-             };
-             context.shaders[i].internal_id = i;
-             shader->internal_data = &context.shaders[i];
-         }
-         break;
+     VkShaderStageFlagBits stages;
+     if (shader->config.stage_count > 0 && shader->config.stage_names[0])
+     {
+          stages = set_shader_stages(shader->config.stage_names, shader->config.stage_count);
      }
-   }
-   // add shader properties 
-  if(shader->config.attribute_count > 0){
-     add_shader_property("attributes",shader->config,(vulkan_shader*)shader->internal_data,shader);
-   }
-  if(shader->config.uniform_count > 0){
-     add_shader_property("uniforms",shader->config,(vulkan_shader*)shader->internal_data,shader);
-   }
-   if(shader->config.sampler_count > 0){
-     add_shader_property("samplers",shader->config,(vulkan_shader*)shader->internal_data, shader);
-   }
-   // intialize the shader
-   if(!vulkan_shader_intialize((vulkan_shader*)shader->internal_data)){
-     DERROR("could not initialize the vulkan material shader");
-     return false;
-   }
-   return true; 
+     else
+     {
+          DERROR("shader must have a list one shader stage for shader to be created");
+          return false;
+     }
+     // initialize the shader
+     for (u32 i = 0; i < VULKAN_MAX_SHADER; i++)
+     {
+          if (context.shaders[i].internal_id == INVALID_ID)
+          {
+               if (string_equal(shader->config.renderpass, "mainrenderpass"))
+               {
+                    if (!vulkan_shader_create(&context, shader->name, &context.main_renderpass, stages, 1024, shader->use_instance, shader->use_push_constants, &context.shaders[i]))
+                    {
+                         DERROR("vulkan failed to initialize internal_data for shader");
+                         return false;
+                    };
+                    context.shaders[i].internal_id = i;
+                    shader->internal_data = &context.shaders[i];
+               }
+               break;
+          }
+     }
+     // add shader properties
+     if (shader->config.attribute_count > 0)
+     {
+          add_shader_property("attributes", shader->config, (vulkan_shader *)shader->internal_data, shader);
+     }
+     if (shader->config.uniform_count > 0)
+     {
+          add_shader_property("uniforms", shader->config, (vulkan_shader *)shader->internal_data, shader);
+     }
+     if (shader->config.sampler_count > 0)
+     {
+          add_shader_property("samplers", shader->config, (vulkan_shader *)shader->internal_data, shader);
+     }
+     // intialize the shader
+     if (!vulkan_shader_intialize((vulkan_shader *)shader->internal_data))
+     {
+          DERROR("could not initialize the vulkan material shader");
+          return false;
+     }
+     return true;
 };
 
-void add_uniform(vulkan_shader*shader, shader_scope scope, const char*type, const char*name, u32*out_location){
-        if(string_equal(type,"mat4"))
-             vulkan_shader_add_uniform_mat4(shader, name,scope,out_location);
-        else if(string_equal(type,"vec4"))
-             vulkan_shader_add_uniform_vec4(shader, name,scope,out_location); 
-        else if(string_equal(type,"i16"))
-             vulkan_shader_add_uniform_i16(shader, name,scope,out_location); 
-        else if(string_equal(type,"i32"))
-             vulkan_shader_add_uniform_i32(shader, name,scope,out_location);
-        else if(string_equal(type,"u16"))
-             vulkan_shader_add_uniform_u16(shader, name,scope,out_location);
-        else if(string_equal(type,"u32"))
-             vulkan_shader_add_uniform_u32(shader, name,scope,out_location); 
-        else if(string_equal(type,"u8"))
-             vulkan_shader_add_uniform_u8(shader, name,scope,out_location); 
-        else if(string_equal(type,"f32"))
-             vulkan_shader_add_uniform_f32(shader, name,scope,out_location);  
-        else if(string_equal(type,"vec2"))
-             vulkan_shader_add_uniform_vec2(shader, name,scope,out_location); 
-        else if(string_equal(type,"vec3"))
-             vulkan_shader_add_uniform_vec3(shader, name,scope,out_location);                            
+void add_uniform(vulkan_shader *shader, shader_scope scope, const char *type, const char *name, u32 *out_location)
+{
+     if (string_equal(type, "mat4"))
+          vulkan_shader_add_uniform_mat4(shader, name, scope, out_location);
+     else if (string_equal(type, "vec4"))
+          vulkan_shader_add_uniform_vec4(shader, name, scope, out_location);
+     else if (string_equal(type, "i16"))
+          vulkan_shader_add_uniform_i16(shader, name, scope, out_location);
+     else if (string_equal(type, "i32"))
+          vulkan_shader_add_uniform_i32(shader, name, scope, out_location);
+     else if (string_equal(type, "u16"))
+          vulkan_shader_add_uniform_u16(shader, name, scope, out_location);
+     else if (string_equal(type, "u32"))
+          vulkan_shader_add_uniform_u32(shader, name, scope, out_location);
+     else if (string_equal(type, "u8"))
+          vulkan_shader_add_uniform_u8(shader, name, scope, out_location);
+     else if (string_equal(type, "f32"))
+          vulkan_shader_add_uniform_f32(shader, name, scope, out_location);
+     else if (string_equal(type, "vec2"))
+          vulkan_shader_add_uniform_vec2(shader, name, scope, out_location);
+     else if (string_equal(type, "vec3"))
+          vulkan_shader_add_uniform_vec3(shader, name, scope, out_location);
 }
 
-void set_uniform(vulkan_shader*shader, const char*type,u32 location, void*value){
-        if(string_equal(type,"mat4")){
-               mat4*internal_value = (mat4*)value;
-               vulkan_shader_set_uniform_mat4(shader,location,*internal_value);
-        }
-        else if(string_equal(type,"vec4")){
-            vec4*internal_value = (vec4*)value;
-            vulkan_shader_set_uniform_vec4(shader,location,*internal_value);
-        }
-       else if(string_equal(type,"vec3")){
-            vec3*internal_value = (vec3*)value;
-            vulkan_shader_set_uniform_vec3(shader,location,*internal_value);
-        }
-      else if(string_equal(type,"vec2")){
-            vec2*internal_value = (vec2*)value;
-            vulkan_shader_set_uniform_vec2(shader,location,*internal_value);
-        }
-     else if(string_equal(type,"i16")){
-            i16*internal_value = (i16*)value;
-            vulkan_shader_set_uniform_i16(shader,location,*internal_value);
-        }
-     else if(string_equal(type,"i32")){
-            int*internal_value = (int*)value;
-            vulkan_shader_set_uniform_i32(shader,location,*internal_value);
-      }
-     else if(string_equal(type,"u8")){
-            u8*internal_value = (u8*)value;
-            vulkan_shader_set_uniform_u8(shader,location,*internal_value);
+void set_uniform(vulkan_shader *shader, const char *type, u32 location, void*value)
+{
+     if (string_equal(type, "mat4"))
+     {
+          vulkan_shader_set_uniform_mat4(shader, location, value);
      }
-     else if(string_equal(type,"u16")){
-            u16*internal_value = (u16*)value;
-            vulkan_shader_set_uniform_u16(shader,location,*internal_value);
+     else if (string_equal(type, "vec4"))
+     {
+          vulkan_shader_set_uniform_vec4(shader, location, value);
      }
-     else if(string_equal(type,"u32")){
-            u32*internal_value = (u32*)value;
-            vulkan_shader_set_uniform_u32(shader,location,*internal_value);
+     else if (string_equal(type, "vec3"))
+     {
+          vulkan_shader_set_uniform_vec3(shader, location, value);
      }
-     else if(string_equal(type,"f32")){
-            float*internal_value = (float*)value;
-            vulkan_shader_set_uniform_f32(shader,location,*internal_value);
-     }                             
+     else if (string_equal(type, "vec2"))
+     {
+          vulkan_shader_set_uniform_vec2(shader, location, value);
+     }
+     else if (string_equal(type, "i16"))
+     {
+          i16 *internal_value = (i16 *)value;
+          vulkan_shader_set_uniform_i16(shader, location, *internal_value);
+     }
+     else if (string_equal(type, "i32"))
+     {
+          int *internal_value = (int *)value;
+          vulkan_shader_set_uniform_i32(shader, location, *internal_value);
+     }
+     else if (string_equal(type, "u8"))
+     {
+          u8 *internal_value = (u8 *)value;
+          vulkan_shader_set_uniform_u8(shader, location, *internal_value);
+     }
+     else if (string_equal(type, "u16"))
+     {
+          u16 *internal_value = (u16 *)value;
+          vulkan_shader_set_uniform_u16(shader, location, *internal_value);
+     }
+     else if (string_equal(type, "u32"))
+     {
+          u32 *internal_value = (u32 *)value;
+          vulkan_shader_set_uniform_u32(shader, location, *internal_value);
+     }
+     else if (string_equal(type, "f32"))
+     {
+          
+          vulkan_shader_set_uniform_f32(shader, location, value);
+     }
 }
 
-
-
-
-
-                                      
-void add_shader_property(const char*property_name, material_shader_config config, vulkan_shader*shader, material_shader*material_shader){
-     u32 count= 0;
-     if(string_equal(property_name, "attributes")){
-         count = config.attribute_count;
+void add_shader_property(const char *property_name, material_shader_config config, vulkan_shader *shader, material_shader *material_shader)
+{
+     u32 count = 0;
+     if (string_equal(property_name, "attributes"))
+     {
+          count = config.attribute_count;
      }
-     else if(string_equal(property_name, "uniforms")){
+     else if (string_equal(property_name, "uniforms"))
+     {
           count = config.uniform_count;
      }
-     else if(string_equal(property_name, "samplers")){
+     else if (string_equal(property_name, "samplers"))
+     {
           count = config.sampler_count;
      }
-     for(u32 i=0; i < count; i++){
-          if(string_equal(property_name, "attributes")){
-               vulkan_shader_add_attributes(shader,config.attribute_names[i],change_str_to_enum(config.attribute_type[i]));
+     for (u32 i = 0; i < count; i++)
+     {
+          if (string_equal(property_name, "attributes"))
+          {
+               vulkan_shader_add_attributes(shader, config.attribute_names[i], change_str_to_enum(config.attribute_type[i]));
           }
-          else if(string_equal(property_name, "uniforms")){
-                  u32 temp = 0;
-                if(string_equal(config.uniform_scope[i], "GLOBAL")){
-                    ADD_UNIFORM(shader,SHADER_SCOPE_GLOBAL,config.uniform_type[i], config.uniform_names[i],&temp);
-                } 
-                else if(string_equal(config.uniform_scope[i],"LOCAL")){
-                       ADD_UNIFORM(shader,SHADER_SCOPE_LOCAL,config.uniform_type[i], config.uniform_names[i],&temp);
-                }
-                else{
-                   ADD_UNIFORM(shader,SHADER_SCOPE_INSTANCE,config.uniform_type[i], config.uniform_names[i],&temp);
-                }
-
-          }
-          else if(string_equal(property_name, "samplers")){
+          else if (string_equal(property_name, "uniforms"))
+          {
                u32 temp = 0;
-                if(string_equal(config.sampler_scope[i], "GLOBAL")){
-                     vulkan_shader_add_sampler(shader,config.sampler_name[i],SHADER_SCOPE_GLOBAL,&temp); 
-                } 
-                else if(string_equal(config.uniform_scope[i],"LOCAL")){
-                    vulkan_shader_add_sampler(shader,config.sampler_name[i],SHADER_SCOPE_LOCAL,&temp);
-                }
-                else{
-                 vulkan_shader_add_sampler(shader,config.sampler_name[i],SHADER_SCOPE_INSTANCE,&temp);
-                }  
+               if (string_equal(config.uniform_scope[i], "GLOBAL"))
+               {
+                    ADD_UNIFORM(shader, SHADER_SCOPE_GLOBAL, config.uniform_type[i], config.uniform_names[i], &temp);
+               }
+               else if (string_equal(config.uniform_scope[i], "LOCAL"))
+               {
+                    ADD_UNIFORM(shader, SHADER_SCOPE_LOCAL, config.uniform_type[i], config.uniform_names[i], &temp);
+               }
+               else
+               {
+                    ADD_UNIFORM(shader, SHADER_SCOPE_INSTANCE, config.uniform_type[i], config.uniform_names[i], &temp);
+               }
           }
-
+          else if (string_equal(property_name, "samplers"))
+          {
+               u32 temp = 0;
+               if (string_equal(config.sampler_scope[i], "GLOBAL"))
+               {
+                    vulkan_shader_add_sampler(shader, config.sampler_name[i], SHADER_SCOPE_GLOBAL, &temp);
+               }
+               else if (string_equal(config.uniform_scope[i], "LOCAL"))
+               {
+                    vulkan_shader_add_sampler(shader, config.sampler_name[i], SHADER_SCOPE_LOCAL, &temp);
+               }
+               else
+               {
+                    vulkan_shader_add_sampler(shader, config.sampler_name[i], SHADER_SCOPE_INSTANCE, &temp);
+               }
+          }
      }
 }
-shader_attribute_type change_str_to_enum(const char*str){
-    shader_attribute_type type;
-    for(u32 i=0; i < 28; i++){
-      if(string_equal(context.array[i].str_variant, str)){
-          type = context.array[i].value;
-          break;
-      }
-    }
-    return type;
+shader_attribute_type change_str_to_enum(const char *str)
+{
+     shader_attribute_type type;
+     for (u32 i = 0; i < 28; i++)
+     {
+          if (string_equal(context.array[i].str_variant, str))
+          {
+               type = context.array[i].value;
+               break;
+          }
+     }
+     return type;
 }
-bool vulkan_acquire_material_shader_resources(struct material_shader*shader,u32*material_id){
-  vulkan_shader*internal_data=(vulkan_shader*)shader->internal_data;
-  return vulkan_shader_acquire_instance_resources(&context.shaders[internal_data->internal_id], material_id);
+bool vulkan_acquire_material_shader_resources(struct material_shader *shader, u32 *material_id)
+{
+     vulkan_shader *internal_data = (vulkan_shader *)shader->internal_data;
+     return vulkan_shader_acquire_instance_resources(&context.shaders[internal_data->internal_id], material_id);
 }
-bool vulkan_release_material_shader_resources(struct material_shader*shader,u32 material_id){
-    vulkan_shader*internal_data=(vulkan_shader*)shader->internal_data;
-  if(vulkan_shader_release_instance_resources(&context.shaders[internal_data->internal_id], material_id)){
-         
-  };
-  if(vulkan_shader_destroy(&context.shaders[internal_data->internal_id])){
-          u32 location  = internal_data->internal_id;
+bool vulkan_release_material_shader_resources(struct material_shader *shader, u32 material_id)
+{
+     vulkan_shader *internal_data = (vulkan_shader *)shader->internal_data;
+     if (vulkan_shader_release_instance_resources(&context.shaders[internal_data->internal_id], material_id))
+     {
+     };
+     if (vulkan_shader_destroy(&context.shaders[internal_data->internal_id]))
+     {
+          u32 location = internal_data->internal_id;
           Dzero_memory(&context.shaders[internal_data->internal_id], sizeof(vulkan_shader));
           context.shaders[location].internal_id = INVALID_ID;
           return true;
-  }
-  return false;
+     }
+     return false;
 };
-

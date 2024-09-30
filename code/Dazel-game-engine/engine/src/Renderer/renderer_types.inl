@@ -72,7 +72,7 @@ typedef struct renderer_backend
 
   bool (*begin_frame)(struct renderer_backend *backend, float delta_time);
 
-  void (*update_global_state)(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color, int mode, float delta_time, u32 shader_id);
+  void (*update_global_state)(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color,int mode, float delta_time, global_uniform_object*object, u32 shader_id);
 
   void (*update_light_global_state)(mat4 projection, mat4 view, vec3 view_position, vec4 ambient_color, int mode, float delta_time);
 

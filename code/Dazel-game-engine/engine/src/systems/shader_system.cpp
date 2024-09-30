@@ -31,6 +31,7 @@ bool shader_system_initialize(shader_system_config config, u64*memory_requiremen
     shader_refernce.generation = INVALID_ID;
     shader_refernce.is_in_use = false;
     shader_refernce.reference_id =  INVALID_ID;
+    shader_refernce.reference_count = 0;
     hash_table_fill(&state_ptr->material_shader_reference, &shader_refernce);
     return true;
 }
@@ -60,7 +61,10 @@ bool shader_system_acquire_shader(const char*shader_name, u32*id){
     return false;
   };
   if(reference.reference_id != INVALID_ID){
-   *id = reference.reference_id;
+      *id = reference.reference_id;
+      reference.reference_count++;
+      DINFO("reference count for shader: %s has increased to %i",shader_name, (int)reference.reference_count); 
+      hash_table_set(&state_ptr->material_shader_reference,shader_name,&reference); 
   }
   else{
       // load a configuration file for the shader 
@@ -77,6 +81,8 @@ bool shader_system_acquire_shader(const char*shader_name, u32*id){
                shader_obj = &state_ptr->shaders[i];
                reference.reference_id = i;
                *id = i;
+               reference.reference_count++;
+               DINFO("reference count for shader: %s has increased to %i",shader_name, (int)reference.reference_count); 
                 break;
             };
          }
@@ -172,21 +178,31 @@ void string_data_tranfer(char dst[][128], char data[][128]){
           if(shader_obj->id == INVALID_ID){
             return true;
           }
-         if(!renderer_release_shader_resources(shader_obj,material_id)){
-               DERROR("wrong shader id could not realse rsources of this shader: %s", shader_obj->name);
-               return false;
-         };
-            material_shader_reference reference;
-            hash_table_get(&state_ptr->material_shader_reference, shader_obj->name,&reference);
-            reference.is_in_use = false;
-            reference.reference_id = INVALID_ID;
-            hash_table_set(&state_ptr->material_shader_reference,shader_obj->name,&reference);
-            shader_obj->internal_data = nullptr;
-            Dzero_memory(shader_obj,sizeof(material_shader));
-            shader_obj->id =INVALID_ID;
-            shader_obj->state = SHADER_STATE_NOT_CREATED; 
-            return true;
-  }
+         material_shader_reference reference;
+         hash_table_get(&state_ptr->material_shader_reference, shader_obj->name,&reference);
+         if(reference.reference_count > 0){
+               reference.reference_count--;
+               DINFO("reference count for shader: %s has decreased to %i",shader_obj->name, (int)reference.reference_count);
+               hash_table_set(&state_ptr->material_shader_reference,shader_obj->name,&reference); 
+               return true;
+         }
+         else{
+              if(!renderer_release_shader_resources(shader_obj,material_id)){
+                  DERROR("wrong shader id could not realse rsources of this shader: %s", shader_obj->name);
+                  return false;
+               };
+               reference.is_in_use = false;
+               reference.reference_id = INVALID_ID;
+               hash_table_set(&state_ptr->material_shader_reference,shader_obj->name,&reference);
+               shader_obj->internal_data = nullptr;
+               Dzero_memory(shader_obj,sizeof(material_shader));
+               shader_obj->id =INVALID_ID;
+               shader_obj->state = SHADER_STATE_NOT_CREATED; 
+               return true;
+            }
+
+       
+   }
   else{
    DWARNING("destroying a non existent shader");
    return false;

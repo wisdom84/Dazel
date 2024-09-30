@@ -3,20 +3,25 @@
 #include "resources/resources.inl"
 using namespace dlm;
 typedef struct global_uniform_object{
-  mat4 projection;
-  mat4 view;
-  vec4 ambient_color;
-  vec3 view_position;
-  mat4 m_reserved_0;
-  mat4 m_reserved_1;
+    mat4 projection;
+    mat4 view;
+    vec4 camera_position;
+    vec4 ambient_color;
 }global_uniform_object;
 
 typedef struct uniform_object{
+  mat4 model; 
   vec4 diffuse_color;
-  vec4 shineness;
-  vec4 apply_material;
-  vec4 v_reserved_1;
+  float shineness;
 }uniform_object;
+
+typedef struct sampler_uniform_object{
+
+   Texture*diffuse_texture;
+   Texture*specular_texture;
+}sampler_uniform_object;
+
+
 
 
 typedef struct global_UI_uniform_object{

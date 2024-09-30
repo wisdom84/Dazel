@@ -242,11 +242,6 @@ bool load_material(material_config config, materials*m){
         m->specular_map.texture = nullptr;
     }
 
-    // if(!renderer_create_material(m)){
-    //     DERROR("failed to acquire resources for  materials %s at the  renderer level  booting out ", m->name);
-    //     return false;
-    // }
-
     if(!shader_system_acquire_shader(config.shader_name, &m->shader_id)){
         DERROR("shader_system_acquire_shader failed to acquire a shader for the material");
         return false;
@@ -287,7 +282,7 @@ bool create_default_material(material_system_state*state){
     //     return false;
     // }
 
-    if(!shader_system_acquire_shader("test_default_shader", &state_ptr->default_material.shader_id)){
+    if(!shader_system_acquire_shader("built_in_shader", &state_ptr->default_material.shader_id)){
         DERROR("shader_system_acquire_shader failed to acquire a shader for the material");
         return false;
     }

@@ -22,10 +22,6 @@ void renderer_create_texture( const char*name,int width, int height,int channel_
 
 void renderer_destroy_texture(struct Texture*texture);
 
-bool renderer_create_material(materials*material);
-
-void renderer_destroy_material(materials*material);
-
 bool renderer_create_material_shader(struct material_shader*shader);
 
 bool renderer_acquire_shader_resources(struct material_shader*shader, u32*material_id);

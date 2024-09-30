@@ -410,10 +410,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(0 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(0 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(0 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(0 * 4) + 0].normal = (vec3){0.0f,0.0f,1.0f};
-    // verts[(0 * 4) + 1].normal = (vec3){0.0f,0.0f,1.0f};
-    // verts[(0 * 4) + 2].normal = (vec3){0.0f,0.0f,1.0f};
-    // verts[(0 * 4) + 3].normal = (vec3){0.0f,0.0f,1.0f};
+    verts[(0 * 4) + 0].normal = (vec3){0.0f,0.0f,1.0f};
+    verts[(0 * 4) + 1].normal = (vec3){0.0f,0.0f,1.0f};
+    verts[(0 * 4) + 2].normal = (vec3){0.0f,0.0f,1.0f};
+    verts[(0 * 4) + 3].normal = (vec3){0.0f,0.0f,1.0f};
 
     // back face 
     verts[(1 * 4) + 0].position = (vec3){max_x, min_y, min_z};
@@ -424,10 +424,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(1 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(1 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(1 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(1 * 4) + 0].normal = (vec3){0.0f,0.0f,-1.0f};
-    // verts[(1 * 4) + 1].normal = (vec3){0.0f,0.0f,-1.0f};
-    // verts[(1 * 4) + 2].normal = (vec3){0.0f,0.0f,-1.0f};
-    // verts[(1 * 4) + 3].normal = (vec3){0.0f,0.0f,-1.0f};
+    verts[(1 * 4) + 0].normal = (vec3){0.0f,0.0f,-1.0f};
+    verts[(1 * 4) + 1].normal = (vec3){0.0f,0.0f,-1.0f};
+    verts[(1 * 4) + 2].normal = (vec3){0.0f,0.0f,-1.0f};
+    verts[(1 * 4) + 3].normal = (vec3){0.0f,0.0f,-1.0f};
 
 
     // left face 
@@ -439,10 +439,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(2 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(2 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(2 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(2 * 4) + 0].normal = (vec3){-1.0f,0.0f,0.0f};
-    // verts[(2 * 4) + 1].normal = (vec3){-1.0f,0.0f,0.0f};
-    // verts[(2 * 4) + 2].normal = (vec3){-1.0f,0.0f,0.0f};
-    // verts[(2 * 4) + 3].normal = (vec3){-1.0f,0.0f,0.0f};
+    verts[(2 * 4) + 0].normal = (vec3){-1.0f,0.0f,0.0f};
+    verts[(2 * 4) + 1].normal = (vec3){-1.0f,0.0f,0.0f};
+    verts[(2 * 4) + 2].normal = (vec3){-1.0f,0.0f,0.0f};
+    verts[(2 * 4) + 3].normal = (vec3){-1.0f,0.0f,0.0f};
 
     // right face 
     verts[(3 * 4) + 0].position = (vec3){max_x, min_y, max_z};
@@ -453,10 +453,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(3 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(3 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(3 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(3 * 4) + 0].normal = (vec3){1.0f,0.0f,0.0f};
-    // verts[(3 * 4) + 1].normal = (vec3){1.0f,0.0f,0.0f};
-    // verts[(3 * 4) + 2].normal = (vec3){1.0f,0.0f,0.0f};
-    // verts[(3 * 4) + 3].normal = (vec3){1.0f,0.0f,0.0f};
+    verts[(3 * 4) + 0].normal = (vec3){1.0f,0.0f,0.0f};
+    verts[(3 * 4) + 1].normal = (vec3){1.0f,0.0f,0.0f};
+    verts[(3 * 4) + 2].normal = (vec3){1.0f,0.0f,0.0f};
+    verts[(3 * 4) + 3].normal = (vec3){1.0f,0.0f,0.0f};
 
 
     // bottom face 
@@ -468,10 +468,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(4 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(4 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(4 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(4 * 4) + 0].normal = (vec3){0.0f,-1.0f,0.0f};
-    // verts[(4 * 4) + 1].normal = (vec3){0.0f,-1.0f,0.0f};
-    // verts[(4 * 4) + 2].normal = (vec3){0.0f,-1.0f,0.0f};
-    // verts[(4 * 4) + 3].normal = (vec3){0.0f,-1.0f,0.0f};
+    verts[(4 * 4) + 0].normal = (vec3){0.0f,-1.0f,0.0f};
+    verts[(4 * 4) + 1].normal = (vec3){0.0f,-1.0f,0.0f};
+    verts[(4 * 4) + 2].normal = (vec3){0.0f,-1.0f,0.0f};
+    verts[(4 * 4) + 3].normal = (vec3){0.0f,-1.0f,0.0f};
 
 
     // top face 
@@ -483,10 +483,10 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     verts[(5 * 4) + 1].texture_cord = (vec2){max_uvx, max_uvy};
     verts[(5 * 4) + 2].texture_cord = (vec2){min_uvx, max_uvy};
     verts[(5 * 4) + 3].texture_cord = (vec2){max_uvx, min_uvy};
-    // verts[(5 * 4) + 0].normal = (vec3){0.0f,1.0f,0.0f};
-    // verts[(5 * 4) + 1].normal = (vec3){0.0f,1.0f,0.0f};
-    // verts[(5 * 4) + 2].normal = (vec3){0.0f,1.0f,0.0f};
-    // verts[(5 * 4) + 3].normal = (vec3){0.0f,1.0f,0.0f};
+    verts[(5 * 4) + 0].normal = (vec3){0.0f,1.0f,0.0f};
+    verts[(5 * 4) + 1].normal = (vec3){0.0f,1.0f,0.0f};
+    verts[(5 * 4) + 2].normal = (vec3){0.0f,1.0f,0.0f};
+    verts[(5 * 4) + 3].normal = (vec3){0.0f,1.0f,0.0f};
     Dmemory_copy(config.verticies, verts, config.vertex_size*config.vertex_count);
 
     for(u32 i = 0; i < 6; i++){
