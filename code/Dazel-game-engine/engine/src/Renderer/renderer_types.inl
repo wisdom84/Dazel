@@ -17,7 +17,11 @@ enum builtin_renderpass
   BUILTIN_RENDERPASS_UI = 0x02,
   BUILTIN_RENDERPASS_LIGHT = 0x03
 };
-
+enum renderer_mode{
+ RENDER_MODE_DEFAULT_VIEW,
+ RENDER_MODE_LIGHT_VIEW,
+ RENDER_MODE_NORMAL_VIEW
+};
 enum shader_attribute_type
 {
   SHADER_ATTRIBUTE_TYPE_FLOAT32,
@@ -92,7 +96,7 @@ typedef struct renderer_backend
 
   void (*destroy_geometry)(geometry *geometry);
 
-  void (*draw_geometry)(geometry_render_data data);
+  void (*draw_geometry)(geometry_render_data data,u32 value);
 
   bool (*shader_create)(struct material_shader*shader);
 

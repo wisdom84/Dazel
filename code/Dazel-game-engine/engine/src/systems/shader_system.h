@@ -34,6 +34,7 @@ typedef struct material_shader
     bool use_instance;
     bool use_push_constants;
     bool is_active;
+    bool resource_acquired;
     shader_state state; 
     void*internal_data;
     material_shader_config config;
@@ -56,5 +57,6 @@ bool shader_system_acquire_shader(const char*shader_name, u32*id);
 void shader_system_get_shader_by_id(u32 id, material_shader*shader);
 bool shader_system_create_shader(u32 shader_id, u32*material_id);
 bool shader_system_destroy_shader(u32 shader_id, u32 material_id); 
+
 
 

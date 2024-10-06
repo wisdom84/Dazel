@@ -4,13 +4,14 @@
 #include <core/logger.h>
 #include <core/Dmemory.h>
 #include <Renderer/renderer_frontend.h>
+#include <core/event_manager.h>
 float Clamp(float value, float min_num, float max_num){
   return value <= min_num ? min_num : value >= max_num ? max_num : value;
 }
 void recalculate_camera_view_matrix(game_state*state){
    if( state->camera_view_dirty){
     mat4 rotation = mat4_euler_xyz(state->camera_euler.x,state->camera_euler.y,state->camera_euler.z);
-    mat4 translation = mat4_homogeneous_translation(state->camera_position.x,state->camera_position.y,state->camera_position.z);
+    mat4 translation =mat4_transponse(mat4_homogeneous_translation(state->camera_position.x,state->camera_position.y,state->camera_position.z));
     state->view =translation*rotation;
     state->view = mat4_inverse(state->view);
     state->camera_view_dirty= false;
@@ -94,8 +95,24 @@ void camera_pitch(game_state*state,float amount){
       state->camera_position.z += velocity.z * temp_move_speed * delta_time;
       state->camera_view_dirty = true;
     }
+    // temp code 
+    u32 mode ;
+    if(input_key_is_down(KEY_0)){
+      mode = 0;
+      renderer_set_render_mode(mode);
+    }
+     if(input_key_is_down(KEY_1)){
+      mode = 1;
+      renderer_set_render_mode(mode);
+    }
+    if(input_key_is_down(KEY_2)){
+      mode = 2;
+      renderer_set_render_mode(mode);
+    }
+    //temp code
     recalculate_camera_view_matrix(state);
     renderer_set_view(state->view,  state->camera_position);
+  
     return true;
  };
 

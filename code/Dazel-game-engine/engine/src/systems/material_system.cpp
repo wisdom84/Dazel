@@ -73,10 +73,10 @@ bool material_system_initialize(u64*memory_requirements,void*state,material_syst
     Dzero_memory(&state_ptr->registered_materials[i].diffuse_map, sizeof(texture_map));
    }
   // set up defualt textures
-  if(!create_default_material(state_ptr)){
-    DFATAL("failed to load up default material. material system booting out...");
-    return false;
-  };
+//   if(!create_default_material(state_ptr)){
+//     DFATAL("failed to load up default material. material system booting out...");
+//     return false;
+//   };
    return true;
 };
 
@@ -92,7 +92,7 @@ void material_system_shutdown(void*state){
     }
    }
    //destroying default material
-   destroy_material(&s->default_material);
+//    destroy_material(&s->default_material);
    s=0;
 };
 
@@ -148,6 +148,7 @@ materials*material_system_acquire_from_config(material_config config, bool apply
             DTRACE("material '%s' does not exist. created and ref_count is now %i.", config.name , ref.reference_count);
         }
         else{
+         
             // DTRACE("material '%s' already exists, ref_count increased to %i.", config.name , ref.reference_count);
         }
         // m->apply_material = apply_material;
@@ -215,6 +216,7 @@ bool load_material(material_config config, materials*m){
     m->diffuse_color = config.diffuse_color;
     m->shineness = config.shineness;
 
+
     if(string_length(config.diffuse_map_name) > 0){
         m->diffuse_map.use = TEXTURE_USE_MAP_DIFFUSE;
         m->diffuse_map.texture = texture_system_acquire(config.diffuse_map_name,true);
@@ -228,12 +230,13 @@ bool load_material(material_config config, materials*m){
         m->diffuse_map.use = TEXTURE_USE_UNKNOWN;
         m->diffuse_map.texture = nullptr;
     }
+
     if(string_length(config.specular_map_name) > 0){
         m->specular_map.use = TEXTURE_USE_MAP_SPECULAR;
         m->specular_map.texture = texture_system_acquire(config.specular_map_name,true);
         string_n_copy(m->specular_map.texture->name, config.specular_map_name, TEXTURE_NAME_MAX_LENGTH);
         if(!m->specular_map.texture){
-            DWARNING("unable to load texture %s for material %s, using default.", config.diffuse_map_name,m->name);
+            DWARNING("unable to load texture %s for material %s, using default.", config.specular_map_name,m->name);
             m->specular_map.texture= texture_system_get_defualt_texture();
         }
     }
@@ -242,11 +245,26 @@ bool load_material(material_config config, materials*m){
         m->specular_map.texture = nullptr;
     }
 
+    if(string_length(config.normal_map_name) > 0){
+        m->normal_map.use = TEXTURE_USE_MAP_NORMAL;
+        m->normal_map.texture = texture_system_acquire(config.normal_map_name,true);
+        string_n_copy(m->normal_map.texture->name, config.normal_map_name, TEXTURE_NAME_MAX_LENGTH);
+        if(!m->normal_map.texture){
+            DWARNING("unable to load texture %s for material %s, using default.", config.normal_map_name,m->name);
+            m->normal_map.texture= texture_system_get_defualt_texture();
+        }
+    }
+    else{
+        m->normal_map.use = TEXTURE_USE_UNKNOWN;
+        m->normal_map.texture = nullptr;
+    }
+    
+
     if(!shader_system_acquire_shader(config.shader_name, &m->shader_id)){
         DERROR("shader_system_acquire_shader failed to acquire a shader for the material");
         return false;
     }
-    if(!shader_system_create_shader(m->shader_id,&m->id)){
+    if(!shader_system_create_shader(m->shader_id,&m->bound_instance_id)){
         DERROR("shader_system_failed to create shader aquired by the material");
         return false;
     }
@@ -305,6 +323,7 @@ bool load_configuration_file(const char*name, material_config*out_config){
     string_n_copy(out_config->name, configuration->name, MATERIAL_NAME_MAX_LENGTH);
     string_n_copy(out_config->diffuse_map_name, configuration->diffuse_map_name, TEXTURE_NAME_MAX_LENGTH);
     string_n_copy(out_config->specular_map_name, configuration->specular_map_name, TEXTURE_NAME_MAX_LENGTH);
+    string_n_copy(out_config->normal_map_name, configuration->normal_map_name, TEXTURE_NAME_MAX_LENGTH);
     string_n_copy(out_config->shader_name, configuration->shader_name, SHADER_NAME_MAX_LENGTH);
     out_config->diffuse_color = configuration->diffuse_color;
     out_config->shineness = configuration->shineness;
@@ -321,3 +340,4 @@ materials*material_system_get_default_material(){
   DWARNING("call to default material without initialization of material system or call to default meterial after shutdown of material system returning nullptr");
   return nullptr;
 }
+

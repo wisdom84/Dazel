@@ -23,6 +23,7 @@ typedef struct renderer_system_state{
    float far_clip;
    bool active[MAX_SHADER_INSTANCE];
    global_uniform_object global_ubo;
+   u32 render_mode;
 }renderer_system_state;
 
 renderer_backend*backend=0;
@@ -44,12 +45,12 @@ bool renderer_initialize(const char*application_name, struct platform_state*plat
       state_ptr->far_clip =0.1f;
       state_ptr->ambient_color = vec4_create(0.25f, 0.25f,0.25f,1.0f);
       state_ptr->near_clip = 1000.0f;
-      state_ptr->view =mat4_homogeneous_translation(0.0f,0.0f,4.0f);
+      state_ptr->view =  mat4_homogeneous_translation(0.0f,0.0f,4.0f);
       state_ptr->view= mat4_inverse(state_ptr->view);
 
    
       state_ptr->global_ubo.projection = mat4_perspective(45.0f,900.f/600.f,0.1f,1000.f);
-      state_ptr->global_ubo.view = mat4_homogeneous_translation(0.0f,0.0f,4.0f);
+      state_ptr->global_ubo.view = mat4_transponse(mat4_homogeneous_translation(0.0f,0.0f,4.0f));
       state_ptr->global_ubo.view =  mat4_inverse(state_ptr->global_ubo.view);
       state_ptr->global_ubo.ambient_color = vec4_create(0.25f, 0.25f,0.25f,1.0f);
       // UI shader projection and view 
@@ -76,8 +77,35 @@ void renderer_on_resized(u16 width, u16 height){
    backend->resized(backend, width, height);
 }
 
-bool renderer_draw_frame(render_packet*packet){
+bool renderer_set_render_mode(u32 mode){
+   switch (mode)
+   {
+   case 0:
+      state_ptr->render_mode = 0;
+      state_ptr->global_ubo.render_mode = state_ptr->render_mode;
+      DDEBUG("render mode change to %i",mode);
+      break;
+      return true;
+   case 1:
+       state_ptr->render_mode = 1;
+       state_ptr->global_ubo.render_mode = state_ptr->render_mode;
+       DDEBUG("render mode change to %i",mode);
+       break; 
+       return true;
+   case 2:
+       state_ptr->render_mode = 2;
+       state_ptr->global_ubo.render_mode = state_ptr->render_mode;
+       DDEBUG("render mode change to %i",mode);
+       break; 
+       return true;    
+   default:
+      break;
+   }
+   return false;
+}
 
+bool renderer_draw_frame(render_packet*packet){
+   backend->frame_count=backend->frame_count+1;
    if(backend->begin_frame(backend,packet->delta_time)){
           // begin world renderpass
          if(!backend->begin_renderpass(backend,BUILTIN_RENDERPASS_WORLD)){
@@ -90,12 +118,14 @@ bool renderer_draw_frame(render_packet*packet){
              }   
         }
 
-
+          
          u32 count = packet->geometry_count;
-         // for(u32 i = 0; i < count; i++){
-         //    backend->draw_geometry(packet->geometries[i]);
-         // }
-         backend->draw_geometry(packet->geometries[0]);
+
+         for(u32 i = 0; i < count; i++){
+            backend->draw_geometry(packet->geometries[i], backend->frame_count);
+            packet->geometries[i].geo_obj->material->renderer_frame_number = backend->frame_count;
+         }
+         // backend->draw_geometry(packet->geometries[0]);
      
 
          if(!backend->end_renderpass(backend,BUILTIN_RENDERPASS_WORLD)){
@@ -126,7 +156,7 @@ bool renderer_draw_frame(render_packet*packet){
             DERROR("renderer end frame failed the application is shuting down");
             return false;
          }
-         backend->frame_count=backend->frame_count+1;
+        
    };
   return true; 
 }
@@ -153,9 +183,10 @@ bool renderer_create_geometry(geometry*geo_obj,u32 vertex_count,u32 vertex_size 
    
 };
 
-void draw_geometry(geometry_render_data data){
-   backend->draw_geometry(data);
-};
+// void draw_geometry(geometry_render_data data){
+//    backend->draw_geometry(data);
+// };
+
 
 void renderer_destroy_geometry(geometry*geometry){
     backend->destroy_geometry(geometry);

@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.h"
 #include "Math/dlm.h"
+#include "Math/transform.h"
 using namespace dlm;
 #define  MATERIAL_NAME_MAX_LENGTH 512
 
@@ -10,9 +11,9 @@ using namespace dlm;
 
 #define SHADER_NAME_MAX_LENGTH 512
 
-#define MAX_ATTRIBUTE_COUNT 10
-#define MAX_UNIFORM_COUNT 10
-#define MAX_SAMPLER_COUNT 10
+#define MAX_ATTRIBUTE_COUNT 20
+#define MAX_UNIFORM_COUNT 20
+#define MAX_SAMPLER_COUNT 20
 #define MAX_STAGE_NAME_LENGTH 128
 #define MAX_ATTRIBUTE_TYPE_NAME_LENGTH 128
 #define MAX_UNIFORM_TYPE_NAME_LENGTH 128
@@ -56,6 +57,7 @@ typedef struct material_config{
     vec4 diffuse_color;
     char diffuse_map_name[TEXTURE_NAME_MAX_LENGTH]; // becomes the texture name 
     char specular_map_name[TEXTURE_NAME_MAX_LENGTH]; 
+    char normal_map_name[TEXTURE_NAME_MAX_LENGTH]; 
     char shader_name[SHADER_NAME_MAX_LENGTH];
     float shineness;
 }material_config;
@@ -74,7 +76,8 @@ typedef struct Texture{
 enum texture_use{
   TEXTURE_USE_UNKNOWN = 0x00,
   TEXTURE_USE_MAP_DIFFUSE = 0x01,
-  TEXTURE_USE_MAP_SPECULAR = 0x02 
+  TEXTURE_USE_MAP_SPECULAR = 0x02,
+  TEXTURE_USE_MAP_NORMAL = 0x03 
 };
 
 typedef struct texture_map{
@@ -85,6 +88,7 @@ typedef struct texture_map{
 typedef struct materials{
   u32 id;
   u32 shader_id;
+  u32 bound_instance_id;
   u32 internal_id;
   material_type type;
   u32 generations;
@@ -92,8 +96,10 @@ typedef struct materials{
   float shineness;
   texture_map diffuse_map;
   texture_map specular_map;
+  texture_map normal_map;
   char name[MATERIAL_NAME_MAX_LENGTH];
   bool apply_material;
+  u32 renderer_frame_number;
 }materials;
 
 typedef struct geometry{
@@ -104,6 +110,13 @@ typedef struct geometry{
  materials*material;
  bool apply_material;
 }geometry;
+
+typedef struct mesh{
+ u16 geometry_count;
+ geometry**geometries;
+ transform transform;
+ mat4 model;
+}mesh;
 
 typedef struct material_shader_config{
     bool use_instance;

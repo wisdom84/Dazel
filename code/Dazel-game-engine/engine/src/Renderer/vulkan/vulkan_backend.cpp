@@ -279,6 +279,8 @@ bool vulkan_backend_initialize(struct renderer_backend *backend, const char *app
      }
      DINFO("vulkan intialized successfully");
      set_shader_attribute_types();
+     context.geometry_vertex_offset = 0;
+     context.geometry_index_offset = 0;
      return true;
 };
 
@@ -780,6 +782,7 @@ bool recreate_swapchain(renderer_backend *backend)
      {
           vulkan_framebuffer_destroy(&context, &context.swapchain.frame_buffers[i]);
           vulkan_framebuffer_destroy(&context, &context.UI_frame_buffers[i]);
+          vulkan_framebuffer_destroy(&context,&context.light_framebuffers[i]);
      }
      context.main_renderpass.x = 0.0f;
      context.main_renderpass.y = 0.0f;
@@ -825,7 +828,7 @@ bool create_buffers(vulkan_context *context)
           DERROR("failed to create vertex buffer");
           return false;
      }
-     // context->geometry_vertex_offset = 0;
+     context->geometry_vertex_offset = 0;
      u64 index_buffer_size = sizeof(Vertex_3d) * 1024 * 1024;
      if (!vulkan_buffer_create(
              context,
@@ -838,7 +841,7 @@ bool create_buffers(vulkan_context *context)
           DERROR("failed to create index buffer");
           return false;
      }
-     // context->geometry_index_offset = 0;
+     context->geometry_index_offset = 0;
      return true;
 }
 
@@ -975,7 +978,7 @@ bool vulkan_create_geometry(geometry *geo_obj, u32 vertex_count, u32 vertex_size
      VkQueue queue = context.device.graphics;
 
      // Vertex data
-     //  internal_data->vertex_buffer_offset = context.geometry_vertex_offset;
+     // internal_data->vertex_buffer_offset = context.geometry_vertex_offset;
      internal_data->vertex_count = vertex_count;
      internal_data->vertex_element_size = sizeof(Vertex_3d);
      u32 total_size = vertex_count * vertex_size;
@@ -1040,15 +1043,13 @@ void vulkan_destroy_geometry(geometry *geometry)
           internal_data->generations = INVALID_ID;
      }
 };
-void vulkan_renderer_draw_geometry(geometry_render_data data)
-{
-     if (data.geo_obj && data.geo_obj->internal_id == INVALID_ID)
+void vulkan_renderer_draw_geometry(geometry_render_data data, u32 value)
+{   if (data.geo_obj && data.geo_obj->internal_id == INVALID_ID)
      {
           return;
      }
      vulkan_geometry_data *buffer_data = &context.geometries[data.geo_obj->internal_id];
      vulkan_command_buffer *command_buffer = &context.graphics_command_buffers[context.image_index];
-
      // test code
      // binds the pipeline to the graphics bind point
      uniform_object ubo;
@@ -1071,7 +1072,7 @@ void vulkan_renderer_draw_geometry(geometry_render_data data)
      material_shader shader;
      shader_system_get_shader_by_id(material->shader_id, &shader);
      vulkan_shader *internal_data = (vulkan_shader *)shader.internal_data;
-     vulkan_shader_bind_instance(&context.shaders[internal_data->internal_id], material->id);
+     vulkan_shader_bind_instance(&context.shaders[internal_data->internal_id], material->bound_instance_id);
       uniform_object*ubo_data = &ubo;
       u32 ubo_offset = 0;
      for (u32 i = 0; i < shader.config.uniform_count; i++)
@@ -1096,6 +1097,7 @@ void vulkan_renderer_draw_geometry(geometry_render_data data)
      Texture*textures[shader.config.sampler_count];
      textures[0] = material->diffuse_map.texture;
      textures[1] = material->specular_map.texture;
+     textures[2] = material->normal_map.texture;
      for (u32 i = 0; i < shader.config.sampler_count; i++)
      {
           u32 location;
@@ -1105,8 +1107,9 @@ void vulkan_renderer_draw_geometry(geometry_render_data data)
                     vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id], location, textures[i]);
           }
      }
-     vulkan_shader_apply_instance(&context.shaders[internal_data->internal_id]);
-
+     if(material->renderer_frame_number != value){
+        vulkan_shader_apply_instance(&context.shaders[internal_data->internal_id]); 
+     }
      // bind the vertext buffer
      VkDeviceSize vertex_offset[1] = {buffer_data->vertex_buffer_offset};
      vkCmdBindVertexBuffers(command_buffer->handle, 0, 1, &context.vertext_buffer.handle, vertex_offset);

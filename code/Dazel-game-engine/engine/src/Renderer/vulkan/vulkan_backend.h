@@ -26,7 +26,7 @@ bool vulkan_backend_end_frame(struct renderer_backend* backend, float delta_time
 
 
 
-void vulkan_renderer_draw_geometry(geometry_render_data data);
+void vulkan_renderer_draw_geometry(geometry_render_data data, u32 value);
 bool vulkan_renderer_begin_renderpass(struct renderer_backend*backend, u8 renderpass_id);
 bool vulkan_renderer_end_renderpass(struct renderer_backend*backend, u8 renderpass_id);
 
@@ -38,3 +38,5 @@ bool vulkan_create_material_shader(struct material_shader*shader);
 
 bool vulkan_acquire_material_shader_resources(struct material_shader*shader,u32*material_id);
 bool vulkan_release_material_shader_resources(struct material_shader*shader,u32 material_id);
+
+

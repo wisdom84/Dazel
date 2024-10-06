@@ -81,7 +81,10 @@ bool material_loader_load(struct resource_loader*self, const char*name, resource
             string_n_copy(resource_data->diffuse_map_name,trimmed_value,TEXTURE_NAME_MAX_LENGTH);
          }else if(string_equal(trimmed_var_name, "specular_map_name")){
             string_n_copy(resource_data->specular_map_name,trimmed_value,TEXTURE_NAME_MAX_LENGTH);
-         }else if(string_equal(trimmed_var_name, "diffuse_color")){
+         }else if(string_equal(trimmed_var_name, "normal_map_name")){
+            string_n_copy(resource_data->normal_map_name,trimmed_value,TEXTURE_NAME_MAX_LENGTH);
+         }
+         else if(string_equal(trimmed_var_name, "diffuse_color")){
                 if(!string_to_vec4(trimmed_value, &resource_data->diffuse_color)){
                     DERROR("error parsing string to vec4  for diffuse color in file %s at line %hu using the defualt diffuse color ", full_file_path, line_number);
                    resource_data->diffuse_color = vec4_create(1.0f,1.0f,1.0f,1.0f);

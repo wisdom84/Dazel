@@ -629,7 +629,7 @@ bool vulkan_shader_apply_instance(vulkan_shader *shader)
     {
         u32 total_sample_count = shader->config.descriptor_sets[DESC_SET_INDEX_INSTANCE].binding[BINDING_INDEX_SAMPLER].descriptorCount;
         u32 update_sample_count = 0;
-        VkDescriptorImageInfo image_infos[VULKAN_SHADER_MAX_GLOBAL_TEXTURE];
+        VkDescriptorImageInfo image_infos[VULKAN_SHADER_MAX_INSTANCE_TEXTURE];
         for (u32 i = 0; i < total_sample_count; i++)
         {
             Texture *t = shader->instance_state[shader->bound_instance_id].instance_texture[i];
@@ -684,7 +684,7 @@ bool vulkan_shader_acquire_instance_resources(vulkan_shader *shader, u32 *out_in
     }
     vulkan_shader_instance_state *instance_state = &shader->instance_state[*out_instance_id];
     u32 instance_texture_count = shader->config.descriptor_sets[DESC_SET_INDEX_INSTANCE].binding[BINDING_INDEX_SAMPLER].descriptorCount;
-    Dzero_memory(instance_state->instance_texture, sizeof(Texture *) * VULKAN_SHADER_MAX_INSTANCE_TEXTURE);
+    // Dzero_memory(instance_state->instance_texture, sizeof(Texture *) * VULKAN_SHADER_MAX_INSTANCE_TEXTURE);
     Texture *default_texture = texture_system_get_defualt_texture();
     for (u32 i = 0; i < instance_texture_count; i++)
     {
@@ -692,6 +692,18 @@ bool vulkan_shader_acquire_instance_resources(vulkan_shader *shader, u32 *out_in
     }
 
     u64 size = shader->ubo_size;
+    if(size  < 64){
+        size = 64;
+    }
+    else{
+        u64 temp = size/64;
+        if(temp*64 < size){
+            size = (temp+1) * 64;
+        }
+        else{
+            size = temp*64;
+        }
+    }
     if (!vulkan_buffer_allocate(&shader->uniform_buffer, size, &instance_state->offset))
     {
         DERROR("vulkan_material_shader_acquire_resources failed to acquire the ubo space");
@@ -700,7 +712,7 @@ bool vulkan_shader_acquire_instance_resources(vulkan_shader *shader, u32 *out_in
     vulkan_descriptor_set_state *set_state = &instance_state->descriptor_set_state;
 
     u32 binding_count = shader->config.descriptor_sets[DESC_SET_INDEX_INSTANCE].binding_count;
-    Dzero_memory(set_state->descriptor_state, sizeof(vulkan_descriptor_state) * VULKAN_SHADER_MAX_BINDINGS);
+    Dzero_memory(set_state->descriptor_state, sizeof(vulkan_descriptor_state_new) * VULKAN_SHADER_MAX_BINDINGS);
     for (u32 i = 0; i < binding_count; i++)
     {
         for (u32 j = 0; j < 3; j++)

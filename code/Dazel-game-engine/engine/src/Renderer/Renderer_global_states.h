@@ -7,6 +7,7 @@ typedef struct global_uniform_object{
     mat4 view;
     vec4 camera_position;
     vec4 ambient_color;
+    u32  render_mode;
 }global_uniform_object;
 
 typedef struct uniform_object{

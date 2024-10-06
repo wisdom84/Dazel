@@ -32,6 +32,6 @@ bool renderer_create_geometry(geometry*geo_obj,u32 vertex_count,u32 vertex_size 
 
 void renderer_destroy_geometry(geometry*geometry);
 
-void draw_geometry(geometry_render_data data);
-
 void renderer_activate_shader(u32 id, bool is_active);
+
+EXP bool renderer_set_render_mode(u32 mode);

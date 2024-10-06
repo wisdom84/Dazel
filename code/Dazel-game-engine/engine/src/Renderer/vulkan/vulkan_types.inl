@@ -347,7 +347,7 @@ typedef struct vulkan_shader_instance_state
 {
   u64 id;
   u64 offset;
-  Texture *instance_texture[2];
+  Texture *instance_texture[3];
   vulkan_descriptor_set_state descriptor_set_state;
 } vulkan_shader_instance_state;
 
@@ -442,6 +442,10 @@ typedef struct vulkan_context
   vulkan_buffer vertext_buffer;
 
   vulkan_buffer index_buffer;
+
+  u64 geometry_vertex_offset;
+
+  u64 geometry_index_offset;
 
   int (*find_memory_index)(u32 type_filter, u32 property_flag);
 

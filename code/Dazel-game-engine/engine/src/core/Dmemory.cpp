@@ -24,7 +24,7 @@
   "TRANSFORM",
   "ENTITY",
   "ENTITY_NODE",
-  "SCENE"
+  "SCENE",
   "SHADER"
  };
  static struct memory_stats stats;

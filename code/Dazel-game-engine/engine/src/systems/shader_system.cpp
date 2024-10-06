@@ -158,11 +158,11 @@ void string_data_tranfer(char dst[][128], char data[][128]){
  };
 
  bool shader_system_create_shader(u32 shader_id, u32*material_id){
-  if (renderer_acquire_shader_resources(&state_ptr->shaders[shader_id], material_id)){
-      state_ptr->shaders[shader_id].material_id = *material_id;
-      state_ptr->shaders[shader_id].state = SHADER_STATE_INITIALIZED;
-    return true;
-  };
+    if (renderer_acquire_shader_resources(&state_ptr->shaders[shader_id], material_id)){
+               state_ptr->shaders[shader_id].material_id = *material_id;
+               state_ptr->shaders[shader_id].state = SHADER_STATE_INITIALIZED;
+               return true;
+     };
   return false;  
  };
 

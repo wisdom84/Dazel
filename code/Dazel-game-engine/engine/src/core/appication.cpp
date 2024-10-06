@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <limits.h>
+#include "containers/Darray.h"
+#include "Math/transform.h"
 typedef struct application_state{
  linear_allocator system_allocators;  
  game*game_inst;
@@ -49,6 +51,10 @@ typedef struct application_state{
  geometry*test_geometry;
  geometry*test_ui_geometry;
  geometry*light_cube;
+ mesh*meshes;
+
+ mesh meshes_1[10];
+ u32 mesh_count;
  // resource system state
  u64 memory_requirements_resource_system;
  void* resource_system_state;
@@ -176,14 +182,82 @@ bool application_create(game*game_inst){
     return false;
    }
    //temp code
-  geometry_config g_config =geometry_system_generate_cube_config(10.0f, 10.0f,10.0f,1.0f,1.0f,"test_cube","test_materials",true);
-  app_state.test_geometry=geometry_system_acquire_from_config(g_config,true);
-  // free allocated data on the heap
-  Dfree_memory(g_config.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config.vertex_count);
-  Dfree_memory(g_config.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config.index_count);
+  // geometry_config g_config =geometry_system_generate_cube_config(10.0f, 10.0f,10.0f,1.0f,1.0f,"test_cube","test_materials",true);
+  // app_state.test_geometry=geometry_system_acquire_from_config(g_config,true);
+  // // free allocated data on the heap
+  // Dfree_memory(g_config.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config.vertex_count);
+  // Dfree_memory(g_config.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config.index_count);
 //temp code 
   
-  
+//temp code 
+
+// app_state.meshes = darray_create(mesh);
+app_state.mesh_count = 0;
+// first_mesh
+// mesh cube_mesh;
+// cube_mesh.geometry_count = 1;
+// cube_mesh.geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh.geometry_count, MEMORY_TAG_ARRAY);
+// geometry_config g_config_1 =geometry_system_generate_cube_config(10.0f, 10.0f,10.0f,1.0f,1.0f,"test_cube","test_materials",true);
+// cube_mesh.geometries[0] =geometry_system_acquire_from_config(g_config_1,true);
+// cube_mesh.model = mat4_identity();
+// darray_push(app_state.meshes,cube_mesh,mesh);
+// Dfree_memory(g_config_1.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_1.vertex_count);
+// Dfree_memory(g_config_1.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_1.index_count);
+
+
+mesh*cube_mesh = &app_state.meshes_1[app_state.mesh_count];
+cube_mesh->geometry_count = 1;
+cube_mesh->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh->geometry_count, MEMORY_TAG_ARRAY);
+geometry_config g_config_1 =geometry_system_generate_cube_config(10.0f, 10.0f,10.0f,1.0f,1.0f,"test_cube","test_materials",true);
+cube_mesh->geometries[0] =geometry_system_acquire_from_config(g_config_1,true);
+cube_mesh->transform = transform_create();
+app_state.mesh_count++;
+// darray_push(app_state.meshes,cube_mesh,mesh);
+Dfree_memory(g_config_1.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_1.vertex_count);
+Dfree_memory(g_config_1.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_1.index_count);
+
+// second mesh
+// mesh cube_mesh_2;
+// cube_mesh_2.geometry_count = 1;
+// cube_mesh_2.geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh_2.geometry_count, MEMORY_TAG_ARRAY);
+// geometry_config g_config_2 =geometry_system_generate_cube_config(5.0f, 5.0f,5.0f,1.0f,1.0f,"test_cube_2","test_materials",true);
+// cube_mesh_2.geometries[0] =geometry_system_acquire_from_config(g_config_2,true);
+// cube_mesh_2.model =mat4_homogeneous_translation(10.0f,0.0f,1.0f);
+// darray_push(app_state.meshes,cube_mesh_2,mesh);
+// Dfree_memory(g_config_2.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_2.vertex_count);
+// Dfree_memory(g_config_2.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_2.index_count);
+
+
+
+mesh*cube_mesh_2 = &app_state.meshes_1[app_state.mesh_count];
+cube_mesh_2->geometry_count = 1;
+cube_mesh_2->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh_2->geometry_count, MEMORY_TAG_ARRAY);
+geometry_config g_config_2 =geometry_system_generate_cube_config(5.0f, 5.0f,5.0f,1.0f,1.0f,"test_cube_2","test_materials",true);
+cube_mesh_2->geometries[0] =geometry_system_acquire_from_config(g_config_2,true);
+cube_mesh_2->transform = transform_from_position((vec3){10.0f,0.0f,1.0f});
+transform_set_parent(&cube_mesh_2->transform,&cube_mesh->transform);
+app_state.mesh_count++;
+// darray_push(app_state.meshes,cube_mesh,mesh);
+Dfree_memory(g_config_2.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_2.vertex_count);
+Dfree_memory(g_config_2.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_2.index_count);
+
+
+mesh*cube_mesh_3 = &app_state.meshes_1[app_state.mesh_count];
+cube_mesh_3->geometry_count = 1;
+cube_mesh_3->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh_3->geometry_count, MEMORY_TAG_ARRAY);
+geometry_config g_config_3 =geometry_system_generate_cube_config(2.0f, 2.0f,2.0f,1.0f,1.0f,"test_cube_3","test_materials",true);
+cube_mesh_3->geometries[0] =geometry_system_acquire_from_config(g_config_3,true);
+cube_mesh_3->transform = transform_from_position((vec3){5.0f,0.0f,1.0f});
+transform_set_parent(&cube_mesh_3->transform,&cube_mesh_2->transform);
+app_state.mesh_count++;
+// darray_push(app_state.meshes,cube_mesh,mesh);
+Dfree_memory(g_config_3.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_3.vertex_count);
+Dfree_memory(g_config_3.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_3.index_count);
+
+//temp code 
+
+
+
   // test ui geometry
   geometry_config ui_config;
   ui_config.apply_material = true;
@@ -237,7 +311,7 @@ bool application_create(game*game_inst){
    intialized = true; 
    return true;
  };
-float angle= 60.0f;
+float angle= 20.0f;
  bool application_run(){
     clock_start(&app_state.clock);
     clock_update(&app_state.clock);
@@ -267,21 +341,53 @@ float angle= 60.0f;
                     break;
                 };
                 // TODO: temp code 
-                 angle += 10.0f*delta_time; 
-                 geometry_render_data test_render[1];
-                 test_render[0].geo_obj = app_state.test_geometry;
-                 // mat4_homogeneous_rotation("x", 40.0f) * mat4_homogeneous_rotation("y",angle)* mat4_transponse(mat4_homogeneous_translation(-4.0f,0.0f,0.0f));
-                 test_render[0].model = mat4_identity()* mat4_homogeneous_rotation("y", angle); 
-                 geometry_render_data test_ui_render;
-                 test_ui_render.model = mat4_homogeneous_translation(0.0f,0.0f,0.0f);
-                 test_ui_render.geo_obj = app_state.test_ui_geometry;
+                //  angle += 10.0f*delta_time; 
+                //  geometry_render_data test_render[1];
+                //  test_render[0].geo_obj = app_state.test_geometry;
+                //  // mat4_homogeneous_rotation("x", 40.0f) * mat4_homogeneous_rotation("y",angle)* mat4_transponse(mat4_homogeneous_translation(-4.0f,0.0f,0.0f));
+                //  test_render[0].model = mat4_identity()* mat4_homogeneous_rotation("y", angle); 
+                //  geometry_render_data test_ui_render;
+                //  test_ui_render.model = mat4_homogeneous_translation(0.0f,0.0f,0.0f);
+                //  test_ui_render.geo_obj = app_state.test_ui_geometry;
 
-                 render_packet packet;
+                 render_packet packet = {};
                  packet.delta_time = delta_time;
-                 packet.geometry_count = 1;
-                 packet.geometries = test_render;
-                 packet.UI_geometry_count = 1;
-                 packet.UI_geometries = &test_ui_render;
+                 packet.geometry_count = 0;
+                //  u32 mesh_count = darray_get_length(app_state.meshes);
+                 packet.geometries = darray_create(geometry_render_data);
+                 if (app_state.mesh_count > 0){
+                      
+                          mat4 rotation_matrix = mat4_homogeneous_rotation("y", angle* delta_time);
+                          transform_rotate(&app_state.meshes_1[0].transform,rotation_matrix);
+                          // app_state.meshes[0].model = mat4_multiply(app_state.meshes[0].model, rotation_matrix);
+                          if(app_state.mesh_count > 1){
+                            // app_state.meshes[1].model = mat4_multiply(mat4_homogeneous_translation(10.0f,0.0f,1.0f),app_state.meshes[0].model);
+                             transform_rotate(&app_state.meshes_1[1].transform,rotation_matrix);
+                          }
+                          if(app_state.mesh_count > 2){
+                             transform_rotate(&app_state.meshes_1[2].transform,rotation_matrix);
+                          }
+                          for(u32 i = 0; i < app_state.mesh_count; i++){
+                              mesh*m = &app_state.meshes_1[i];
+                              for(u32 j = 0; j < m->geometry_count; j++){
+                                geometry_render_data data;
+                                data.geo_obj = m->geometries[j];
+                                //app_state.meshes[i].model;
+                                data.model = transform_get_world(&m->transform);
+                                darray_push(packet.geometries,data,geometry_render_data);
+                                packet.geometry_count++;  
+                              }
+                          }
+                          // packet.geometry_count = darray_get_length(packet.geometries);
+                 }
+                //  else{
+                //   packet.geometry_count = 0;
+                //   packet.geometries = 0;
+                //  }
+                //  packet.geometry_count = 1;
+                //  packet.geometries = test_render;
+                //  packet.UI_geometry_count = 1;
+                //  packet.UI_geometries = &test_ui_render;
 
                 // TODO: end temp code
                   if(app_state.on_resize){
@@ -289,6 +395,11 @@ float angle= 60.0f;
                       app_state.on_resize = false;
                   }
                 renderer_draw_frame(&packet);
+
+                if(packet.geometries){
+                  darray_destroy_array(packet.geometries);
+                  packet.geometries = 0;
+                }
                 // find how long it took for our frame to be displayed
                 double frame_end_time =get_absolute_time();
                 double frame_elapsed_time = frame_end_time - frame_start_time;
@@ -374,38 +485,53 @@ static int choice = 1;
 static int choice_2 = 0;
 bool event_on_debug(u16 code, void*sender, void*listener, event_context data){
       const char*names[3]{
-           "Cobblestone",
-           "specular",
-           "paving"
+           "test_materials",
+           "orange_lines_materials",
+           "paving2_materials"    
       };
-      const char*spec_names[3]{
-        "orange_lines_512_SPEC",
-        "cobblestone_SPEC",
-        "paving2_SPEC"
-      };
+      // const char*spec_names[3]{
+      //   "orange_lines_512_SPEC",
+      //   "cobblestone_SPEC",
+      //   "paving2_SPEC"
+      // };
       const char*old_name = names[choice];
       choice++;
       choice %= 3;
-      const char*old_name_spec = spec_names[choice_2];
-      choice_2++;
-      choice_2 %=3;
-    if(app_state.test_geometry){
-        app_state.test_geometry->material->diffuse_map.texture = texture_system_acquire(names[choice],true);
-        if(!app_state.test_geometry->material->diffuse_map.texture){
-          DWARNING("event on debug no texture falling to default texture");
-          app_state.test_geometry->material->diffuse_map.texture = texture_system_get_defualt_texture();
-        }
-        // texture_system_release(old_name);
+    //   const char*old_name_spec = spec_names[choice_2];
+    //   choice_2++;
+    //   choice_2 %=3;
+    if(app_state.meshes_1){
+      app_state.meshes_1[0].geometries[0]->material= material_system_acquire(names[choice],true);
+      if(!app_state.meshes_1[0].geometries[0]->material){
+          DWARNING("event on debug no material falling to default material");
       }
+    }
+    // if(app_state.test_geometry){
+    //     app_state.test_geometry->material->diffuse_map.texture = texture_system_acquire(names[choice],true);
+    //     if(!app_state.test_geometry->material->diffuse_map.texture){
+    //       DWARNING("event on debug no texture falling to default texture");
+    //       app_state.test_geometry->material->diffuse_map.texture = texture_system_get_defualt_texture();
+    //     }
+    //     // texture_system_release(old_name);
+    //   }
 
-     if(app_state.test_geometry){
-        app_state.test_geometry->material->specular_map.texture = texture_system_acquire(spec_names[choice_2],true);
-        if(!app_state.test_geometry->material->specular_map.texture){
-          DWARNING("event on debug no texture falling to default texture");
-          app_state.test_geometry->material->specular_map.texture = texture_system_get_defualt_texture();
-        }
-        // texture_system_release(old_name);
-      }
+    //  if(app_state.test_geometry){
+    //     app_state.test_geometry->material->specular_map.texture = texture_system_acquire(spec_names[choice_2],true);
+    //     if(!app_state.test_geometry->material->specular_map.texture){
+    //       DWARNING("event on debug no texture falling to default texture");
+    //       app_state.test_geometry->material->specular_map.texture = texture_system_get_defualt_texture();
+    //     }
+    //     // texture_system_release(old_name);
+    //   }
+
+    //   if(app_state.test_geometry){
+    //     app_state.test_geometry->material->normal_map.texture = texture_system_acquire("normal",true);
+    //     if(!app_state.test_geometry->material->normal_map.texture){
+    //       DWARNING("event on debug no texture falling to default texture");
+    //       app_state.test_geometry->material->normal_map.texture = texture_system_get_defualt_texture();
+    //     }
+    //     // texture_system_release(old_name);
+    //   }
 
    return true;
  };

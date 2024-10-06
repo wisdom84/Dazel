@@ -269,7 +269,7 @@ namespace dlm
 		vec2 texture_cord; 
 		vec3 normal; 
 		// vec4 color;
-		// vec4 tangent;
+		vec4 tangent;
 	}Vertex_3d;
     
 	typedef struct Vertex_2d{
@@ -483,6 +483,13 @@ namespace dlm
 	{
 		return vec3{0.0f, 0.0f, 0.0f};
 	}
+	inline vec3 vec3_one(){
+		vec3 vector;
+		vector.x = 1.0f;
+		vector.y = 1.0f;
+		vector.z = 1.0f;
+		return vector;
+	}
 	inline bool vec3_compare(vec3 vector_0,vec3 vector_1, float tolerance){
         if((dabs(vector_0.x -vector_1.x) > tolerance || dabs(vector_0.y -vector_1.y) > tolerance)
 		|| dabs(vector_0.z -vector_1.z) > tolerance){
@@ -499,6 +506,15 @@ namespace dlm
 		out_vec4.w = 1.0f;
 		return out_vec4;
 	}
+
+	inline vec4 vec3_to_vec4(vec3 vector_0, float num){
+		vec4 out_vec4;
+		out_vec4.x = vector_0.x;
+		out_vec4.y = vector_0.y;
+		out_vec4.z = vector_0.z;
+		out_vec4.w = num;
+		return out_vec4;
+	}
 	inline vec3 vec4_to_vec3(vec4 vector_0)
 	{
 		vec3 out_vec3;
@@ -506,6 +522,13 @@ namespace dlm
 		out_vec3.y = vector_0.y;
 		out_vec3.z = vector_0.z;
 		return out_vec3;
+	}
+	inline vec3 vec3_multiply(vec3 vector_0, vec3 vector_1){
+		vec3 result;
+		result.x = vector_0.x * vector_1.x;
+		result.y = vector_0.y * vector_1.y;
+		result.z = vector_0.z * vector_1.z;
+		return result;
 	}
 
 	//======vec4 class================
@@ -825,6 +848,7 @@ namespace dlm
 		out_mat4_h.a1.elements[3] = x;
 		out_mat4_h.a2.elements[3] = y;
 		out_mat4_h.a3.elements[3] = z;
+		out_mat4_h = mat4_transponse(out_mat4_h);
 		return out_mat4_h;
 	}
 	inline mat4 mat4_homogeneous_rotation(const char *axis, float angle)
@@ -910,6 +934,7 @@ namespace dlm
 		}
 		return matrix_0;
 	}
+	
 
 	inline mat4 mat4_orthographic_proj(float right, float left, float top, float bottom, float nearclip, float farclip)
 	{

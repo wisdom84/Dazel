@@ -1,4 +1,5 @@
 #include "geometry_system.h"
+#include "Math/geometry_math_utils.h"
 #include "core/logger.h"
 #include "core/Dmemory.h"
 #include "core/Dstrings.h"
@@ -49,10 +50,10 @@ bool geometry_system_initialize(u64*memory_requirement, void*state, geometry_sys
         state_ptr->registered_geometries[i].geometry.generation = INVALID_ID;
 
     }
-    if(!create_default_geometry(state_ptr)){
-        DFATAL("failed to create default geometry.Application cannot continue");
-        return false;
-    }
+    // if(!create_default_geometry(state_ptr)){
+    //     DFATAL("failed to create default geometry.Application cannot continue");
+    //     return false;
+    // }
    return true;
 };
 void geometry_system_shutdown(void*state){
@@ -64,7 +65,7 @@ void geometry_system_shutdown(void*state){
         }
     }
     //destroy default geometry
-    destroy_geometry(geometry_state, &geometry_state->default_geometry);
+    // destroy_geometry(geometry_state, &geometry_state->default_geometry);
     geometry_state = 0;
 };
 
@@ -499,6 +500,8 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
         ((u32*)config.indicies)[i_offset + 4] = v_offset + 3;
         ((u32*)config.indicies)[i_offset + 5] = v_offset + 1;
     }
+    geometry_generate_normals(config.vertex_count, (Vertex_3d*)config.verticies,config.index_count, (u32*)config.indicies);
+    geometry_generate_tangent(config.vertex_count, (Vertex_3d*)config.verticies,config.index_count, (u32*)config.indicies);
 
     if(name && string_length(name) > 0){
         string_n_copy(config.name , name , GEOMETRY_NAME_MAX_LENGTH);
