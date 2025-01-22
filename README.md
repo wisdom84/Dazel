@@ -44,4 +44,4 @@ compile along side the compilation of the c++ code ( the vulkan sdk folder shoul
 exact way it is meant to be on your machine. please take note of the version of vulkan been used  "1.3.275.0" a different version might cause issues while compiling the shaders. 
 
 ![image](https://github.com/user-attachments/assets/47a1627a-bcf9-4ea1-9a84-74aeb64b8b29)
-please use the link to view the pictures of the application 
+ 
