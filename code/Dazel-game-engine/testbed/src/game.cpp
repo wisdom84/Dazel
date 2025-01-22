@@ -33,7 +33,7 @@ void camera_pitch(game_state*state,float amount){
     DDEBUG("game initialization called");
     game_state*state = (game_state*)game_inst->state;
     state->camera_position = vec3_create(0.0f,0.0f,25.0f);
-    state->camera_euler = vec3_zero();
+    state->camera_euler = vec3_create(70.0f,0.0f,0.0f);
     state->view = mat4_homogeneous_translation(0.0f,0.0f,25.0f);
     state->view = mat4_inverse(state->view);
     state->camera_view_dirty = true;

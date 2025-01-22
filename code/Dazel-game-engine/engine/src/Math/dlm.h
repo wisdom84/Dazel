@@ -385,6 +385,20 @@ namespace dlm
 		out_vec2.y = vector_0.y;
 		return out_vec2;
 	}
+	inline bool vec2_equal(vec2 vector_0, vec2 vector_1){
+		return (vector_0.x == vector_1.x && vector_0.y == vector_1.y);
+	}
+
+	inline bool vec2_compare(vec2 vector_0,vec2 vector_1, float tolerance){
+        if((dabs(vector_0.x -vector_1.x) > tolerance || dabs(vector_0.y -vector_1.y) > tolerance)){
+			return false;
+		}
+		return true;
+	}
+
+
+
+	// ============== vec3 class =================
 	inline vec3 vec3_create(float x, float y, float z)
 	{
 		vec3 out_vec3;
@@ -496,6 +510,9 @@ namespace dlm
 			return false;
 		}
 		return true;
+	}
+	inline bool vec3_equal(vec3 vector_0, vec3 vector_1){
+		return (vector_0.x == vector_1.x &&  vector_0.y == vector_1.y && vector_0.z == vector_1.z); 
 	}
 	inline vec4 vec3_to_vec4_homogenous(vec3 vector_0)
 	{
@@ -612,14 +629,12 @@ namespace dlm
 	{
 		return vec4{0.0f, 0.0f, 0.0f, 0.0f};
 	}
-	inline bool vec4_compare(vec4 vector_0, vec4 vector_1, float tolerance){
-			 for(auto i=0; i < 4; i++){
-				if(vector_0.elements[i] != vector_1.elements[i]){
-					return false;
-				}
-			 }
-		
-	  return true;		 
+	inline bool vec4_compare(vec4 vector_0,vec4 vector_1, float tolerance){
+        if((dabs(vector_0.x -vector_1.x) > tolerance || dabs(vector_0.y -vector_1.y) > tolerance)
+		|| dabs(vector_0.z -vector_1.z) > tolerance || dabs(vector_0.w -vector_1.w) > tolerance ){
+			return false;
+		}
+		return true;
 	}
 	////=============================matrix===============================
 	inline mat3 mat3_zero()
@@ -921,6 +936,36 @@ namespace dlm
 			}
 		}
 		return out_mat4;
+	}
+
+    inline mat4 mat4_homogeneous_rotation_xyz(const char*order, float x, float y, float z){
+		mat4 result;
+		 if(strcmp(order,"xyz")==0 || strcmp(order,"XYZ")==0){
+			mat4 value = mat4_multiply(mat4_homogeneous_rotation("x",x) , mat4_homogeneous_rotation("y",y));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("z",z)); 
+		 }
+		 else if(strcmp(order,"xzy")==0 || strcmp(order,"XZY")==0){
+	        mat4 value = mat4_multiply(mat4_homogeneous_rotation("x",x) , mat4_homogeneous_rotation("z",z));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("y",y)); 
+		 }
+		 else if(strcmp(order,"yxz")==0 || strcmp(order,"YXZ")==0){
+			mat4 value = mat4_multiply(mat4_homogeneous_rotation("y",y) , mat4_homogeneous_rotation("x",x));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("z",z));  
+		 }
+		 else if(strcmp(order,"yzx")==0 || strcmp(order,"YZX")==0){
+			mat4 value = mat4_multiply(mat4_homogeneous_rotation("y",y) , mat4_homogeneous_rotation("z",z));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("x",x)); 
+		 }
+		 else if(strcmp(order,"zxy")==0 || strcmp(order,"ZXY")==0){
+			mat4 value = mat4_multiply(mat4_homogeneous_rotation("z",z) , mat4_homogeneous_rotation("x",x));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("y",y)); 
+		 }
+		else if(strcmp(order,"zyx")==0 || strcmp(order,"ZYX")==0){
+	        mat4 value = mat4_multiply(mat4_homogeneous_rotation("z",z) , mat4_homogeneous_rotation("y",y));
+            result = mat4_multiply(value,mat4_homogeneous_rotation("x",x));  
+		 }
+
+		 return result;
 	}
 
 	inline mat4 mat4_scale(mat4 matrix_0, float factor)

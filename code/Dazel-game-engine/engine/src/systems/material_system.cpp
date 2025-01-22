@@ -73,10 +73,10 @@ bool material_system_initialize(u64*memory_requirements,void*state,material_syst
     Dzero_memory(&state_ptr->registered_materials[i].diffuse_map, sizeof(texture_map));
    }
   // set up defualt textures
-//   if(!create_default_material(state_ptr)){
-//     DFATAL("failed to load up default material. material system booting out...");
-//     return false;
-//   };
+  if(!create_default_material(state_ptr)){
+    DFATAL("failed to load up default material. material system booting out...");
+    return false;
+  };
    return true;
 };
 
@@ -215,48 +215,57 @@ bool load_material(material_config config, materials*m){
     //diffuse color
     m->diffuse_color = config.diffuse_color;
     m->shineness = config.shineness;
-
+    m->sample_count_less = config.sample_count_less;
+    u32 map_count = 0;
 
     if(string_length(config.diffuse_map_name) > 0){
-        m->diffuse_map.use = TEXTURE_USE_MAP_DIFFUSE;
-        m->diffuse_map.texture = texture_system_acquire(config.diffuse_map_name,true);
-        string_n_copy(m->diffuse_map.texture->name, config.diffuse_map_name, TEXTURE_NAME_MAX_LENGTH);
-        if(!m->diffuse_map.texture){
+        // m->diffuse_map.use = TEXTURE_USE_MAP_DIFFUSE;
+        m->texture_maps[map_count].use = TEXTURE_USE_MAP_DIFFUSE;
+        m->texture_maps[map_count].texture = texture_system_acquire(config.diffuse_map_name,true);
+        // m->diffuse_map.texture = texture_system_acquire(config.diffuse_map_name,true);
+        string_n_copy(m->texture_maps[map_count].texture->name, config.diffuse_map_name, TEXTURE_NAME_MAX_LENGTH);
+        if(!m->texture_maps[map_count].texture){
             DWARNING("unable to load texture %s for material %s, using default.", config.diffuse_map_name,m->name);
-            m->diffuse_map.texture= texture_system_get_defualt_texture();
+            m->texture_maps[map_count].texture= texture_system_get_defualt_texture();
         }
+        map_count++;
     }
     else{
-        m->diffuse_map.use = TEXTURE_USE_UNKNOWN;
-        m->diffuse_map.texture = nullptr;
+        // m->diffuse_map.use = TEXTURE_USE_UNKNOWN;
+        // m->diffuse_map.texture = nullptr;
+
+        m->texture_maps[map_count].use = TEXTURE_USE_UNKNOWN;
+        m->texture_maps[map_count].texture = nullptr;
     }
 
     if(string_length(config.specular_map_name) > 0){
-        m->specular_map.use = TEXTURE_USE_MAP_SPECULAR;
-        m->specular_map.texture = texture_system_acquire(config.specular_map_name,true);
-        string_n_copy(m->specular_map.texture->name, config.specular_map_name, TEXTURE_NAME_MAX_LENGTH);
-        if(!m->specular_map.texture){
+        m->texture_maps[map_count].use = TEXTURE_USE_MAP_SPECULAR;
+        m->texture_maps[map_count].texture = texture_system_acquire(config.specular_map_name,true);
+        string_n_copy(m->texture_maps[map_count].texture->name, config.specular_map_name, TEXTURE_NAME_MAX_LENGTH);
+        if(!m->texture_maps[map_count].texture){
             DWARNING("unable to load texture %s for material %s, using default.", config.specular_map_name,m->name);
-            m->specular_map.texture= texture_system_get_defualt_texture();
+            m->texture_maps[map_count].texture= texture_system_get_defualt_texture();
         }
+        map_count++;
     }
     else{
-        m->specular_map.use = TEXTURE_USE_UNKNOWN;
-        m->specular_map.texture = nullptr;
+        m->texture_maps[map_count].use = TEXTURE_USE_UNKNOWN;
+        m->texture_maps[map_count].texture = nullptr;
     }
 
     if(string_length(config.normal_map_name) > 0){
-        m->normal_map.use = TEXTURE_USE_MAP_NORMAL;
-        m->normal_map.texture = texture_system_acquire(config.normal_map_name,true);
-        string_n_copy(m->normal_map.texture->name, config.normal_map_name, TEXTURE_NAME_MAX_LENGTH);
-        if(!m->normal_map.texture){
+        m->texture_maps[map_count].use = TEXTURE_USE_MAP_NORMAL;
+        m->texture_maps[map_count].texture = texture_system_acquire(config.normal_map_name,true);
+        string_n_copy(m->texture_maps[map_count].texture->name, config.normal_map_name, TEXTURE_NAME_MAX_LENGTH);
+        if(!m->texture_maps[map_count].texture){
             DWARNING("unable to load texture %s for material %s, using default.", config.normal_map_name,m->name);
-            m->normal_map.texture= texture_system_get_defualt_texture();
+            m->texture_maps[map_count].texture= texture_system_get_defualt_texture();
         }
+        map_count++;
     }
     else{
-        m->normal_map.use = TEXTURE_USE_UNKNOWN;
-        m->normal_map.texture = nullptr;
+        m->texture_maps[map_count].use = TEXTURE_USE_UNKNOWN;
+        m->texture_maps[map_count].texture = nullptr;
     }
     
 
@@ -300,14 +309,14 @@ bool create_default_material(material_system_state*state){
     //     return false;
     // }
 
-    if(!shader_system_acquire_shader("built_in_shader", &state_ptr->default_material.shader_id)){
-        DERROR("shader_system_acquire_shader failed to acquire a shader for the material");
-        return false;
-    }
-    if(!shader_system_create_shader(state_ptr->default_material.shader_id,&state_ptr->default_material.id)){
-        DERROR("shader_system_failed to create shader aquired by the material");
-        return false;
-    }
+    // if(!shader_system_acquire_shader("built_in_shader", &state_ptr->default_material.shader_id)){
+    //     DERROR("shader_system_acquire_shader failed to acquire a shader for the material");
+    //     return false;
+    // }
+    // if(!shader_system_create_shader(state_ptr->default_material.shader_id,&state_ptr->default_material.id)){
+    //     DERROR("shader_system_failed to create shader aquired by the material");
+    //     return false;
+    // }
 
    return true;
 };
@@ -329,6 +338,7 @@ bool load_configuration_file(const char*name, material_config*out_config){
     out_config->shineness = configuration->shineness;
     out_config->auto_release = true;
     out_config->type = configuration->type;
+    out_config->sample_count_less = configuration->sample_count_less;
     resource_system_unload(&material);
     return true;
 };

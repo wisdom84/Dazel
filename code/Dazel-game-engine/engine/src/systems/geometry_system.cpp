@@ -151,7 +151,7 @@ bool create_geometry(geometry_system_state*state,geometry_config config, geometr
         out_geometry->internal_id = INVALID_ID;
         return false;
     }
-    string_n_copy(out_geometry->name , config.name, GEOMETRY_NAME_MAX_LENGTH);
+    // string_n_copy(out_geometry->name , config.name, GEOMETRY_NAME_MAX_LENGTH);
     //aquire material 
     if(string_length(config.material_name) > 0){
         out_geometry->material = material_system_acquire(config.material_name, config.apply_material);
@@ -516,3 +516,21 @@ geometry_config geometry_system_generate_cube_config(float width, float height, 
     }
     return config;
 }
+
+void geometry_system_config_dispose(geometry_config*config){
+    if(!config){
+        return;
+    }
+    if(config->verticies){
+      Dfree_memory(config->verticies, MEMORY_TAG_ARRAY,config->vertex_size*config->vertex_count);
+       
+    }
+    if(config->indicies){
+         Dfree_memory(config->indicies, MEMORY_TAG_ARRAY,config->index_size*config->index_count);
+    }
+};
+
+
+
+  
+

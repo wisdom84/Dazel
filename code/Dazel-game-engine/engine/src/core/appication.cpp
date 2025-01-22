@@ -23,6 +23,7 @@
 #include <limits.h>
 #include "containers/Darray.h"
 #include "Math/transform.h"
+#include "Math/geometry_math_utils.h"
 typedef struct application_state{
  linear_allocator system_allocators;  
  game*game_inst;
@@ -188,23 +189,10 @@ bool application_create(game*game_inst){
   // Dfree_memory(g_config.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config.vertex_count);
   // Dfree_memory(g_config.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config.index_count);
 //temp code 
-  
 //temp code 
 
 // app_state.meshes = darray_create(mesh);
 app_state.mesh_count = 0;
-// first_mesh
-// mesh cube_mesh;
-// cube_mesh.geometry_count = 1;
-// cube_mesh.geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh.geometry_count, MEMORY_TAG_ARRAY);
-// geometry_config g_config_1 =geometry_system_generate_cube_config(10.0f, 10.0f,10.0f,1.0f,1.0f,"test_cube","test_materials",true);
-// cube_mesh.geometries[0] =geometry_system_acquire_from_config(g_config_1,true);
-// cube_mesh.model = mat4_identity();
-// darray_push(app_state.meshes,cube_mesh,mesh);
-// Dfree_memory(g_config_1.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_1.vertex_count);
-// Dfree_memory(g_config_1.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_1.index_count);
-
-
 mesh*cube_mesh = &app_state.meshes_1[app_state.mesh_count];
 cube_mesh->geometry_count = 1;
 cube_mesh->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh->geometry_count, MEMORY_TAG_ARRAY);
@@ -215,19 +203,6 @@ app_state.mesh_count++;
 // darray_push(app_state.meshes,cube_mesh,mesh);
 Dfree_memory(g_config_1.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_1.vertex_count);
 Dfree_memory(g_config_1.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_1.index_count);
-
-// second mesh
-// mesh cube_mesh_2;
-// cube_mesh_2.geometry_count = 1;
-// cube_mesh_2.geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*cube_mesh_2.geometry_count, MEMORY_TAG_ARRAY);
-// geometry_config g_config_2 =geometry_system_generate_cube_config(5.0f, 5.0f,5.0f,1.0f,1.0f,"test_cube_2","test_materials",true);
-// cube_mesh_2.geometries[0] =geometry_system_acquire_from_config(g_config_2,true);
-// cube_mesh_2.model =mat4_homogeneous_translation(10.0f,0.0f,1.0f);
-// darray_push(app_state.meshes,cube_mesh_2,mesh);
-// Dfree_memory(g_config_2.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_2.vertex_count);
-// Dfree_memory(g_config_2.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_2.index_count);
-
-
 
 mesh*cube_mesh_2 = &app_state.meshes_1[app_state.mesh_count];
 cube_mesh_2->geometry_count = 1;
@@ -255,6 +230,50 @@ Dfree_memory(g_config_3.verticies,MEMORY_TAG_ARRAY,sizeof(Vertex_3d)*g_config_3.
 Dfree_memory(g_config_3.indicies,MEMORY_TAG_ARRAY,sizeof(u32)*g_config_3.index_count);
 
 //temp code 
+mesh*car_mesh = &app_state.meshes_1[app_state.mesh_count];
+resource car_mesh_resource;
+if(!resource_system_load("falcon",RESOURCE_TYPE_STATIC_MESH,&car_mesh_resource)){
+  DERROR("failed to load car mesh resource");
+}
+else{
+  geometry_config * configs = (geometry_config*)car_mesh_resource.data;
+  car_mesh->geometry_count =car_mesh_resource.size_of_data;
+  car_mesh->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*car_mesh->geometry_count,MEMORY_TAG_ARRAY);
+  for(u32 i =0; i < car_mesh->geometry_count; i++){
+    geometry_config*c = &configs[i];
+    geometry_generate_tangent(c->vertex_count, (Vertex_3d*)c->verticies, c->index_count, (u32*)c->indicies);
+    car_mesh->geometries[i] = geometry_system_acquire_from_config(configs[i],true);
+  }
+  // car_mesh->transform = transform_from_position((vec3){15.0f, 0.0f,1.0f});
+  car_mesh->transform = transform_from_position_rotation((vec3){15.0f,0.0f,1.0f},mat4_homogeneous_rotation("x",180.0f));
+  resource_system_unload(&car_mesh_resource);
+  app_state.mesh_count++;
+}
+
+
+mesh*sponza_mesh = &app_state.meshes_1[app_state.mesh_count];
+resource sponza_mesh_resource;
+if(!resource_system_load("sponza",RESOURCE_TYPE_STATIC_MESH,&sponza_mesh_resource)){
+  DERROR("failed to load sponza  mesh resource");
+}
+else{
+  geometry_config * configs = (geometry_config*)sponza_mesh_resource.data;
+  sponza_mesh->geometry_count =sponza_mesh_resource.size_of_data;
+  sponza_mesh->geometries = (geometry**)Dallocate_memory(sizeof(geometry*)*sponza_mesh->geometry_count,MEMORY_TAG_ARRAY);
+  for(u32 i =0; i < sponza_mesh->geometry_count; i++){
+    geometry_config*c = &configs[i];
+    geometry_generate_tangent(c->vertex_count, (Vertex_3d*)c->verticies, c->index_count, (u32*)c->indicies);
+    sponza_mesh->geometries[i] = geometry_system_acquire_from_config(configs[i],true);
+  }
+  // car_mesh->transform =
+  sponza_mesh->transform = transform_from_position_rotation_scale(vec3_zero(),mat4_homogeneous_rotation_xyz("yxz",90.0f,90.0f,0.0f) ,vec3_create(0.05f,0.05f,0.05f));
+  resource_system_unload(&sponza_mesh_resource);
+  app_state.mesh_count++;
+}
+
+
+
+
 
 
 
@@ -356,17 +375,19 @@ float angle= 20.0f;
                 //  u32 mesh_count = darray_get_length(app_state.meshes);
                  packet.geometries = darray_create(geometry_render_data);
                  if (app_state.mesh_count > 0){
-                      
                           mat4 rotation_matrix = mat4_homogeneous_rotation("y", angle* delta_time);
                           transform_rotate(&app_state.meshes_1[0].transform,rotation_matrix);
-                          // app_state.meshes[0].model = mat4_multiply(app_state.meshes[0].model, rotation_matrix);
+                    
                           if(app_state.mesh_count > 1){
-                            // app_state.meshes[1].model = mat4_multiply(mat4_homogeneous_translation(10.0f,0.0f,1.0f),app_state.meshes[0].model);
+
                              transform_rotate(&app_state.meshes_1[1].transform,rotation_matrix);
                           }
                           if(app_state.mesh_count > 2){
                              transform_rotate(&app_state.meshes_1[2].transform,rotation_matrix);
                           }
+                          // if(app_state.mesh_count > 3){
+                          //      transform_rotate(&app_state.meshes_1[3].transform,rotation_matrix);
+                          // }
                           for(u32 i = 0; i < app_state.mesh_count; i++){
                               mesh*m = &app_state.meshes_1[i];
                               for(u32 j = 0; j < m->geometry_count; j++){

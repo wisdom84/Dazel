@@ -1035,7 +1035,7 @@ void vulkan_destroy_geometry(geometry *geometry)
           // TODO: free vertex data
           if (internal_data->index_element_size > 0)
           {
-               // TODO: free index data
+              // TODO: free index data
           }
           // clean up memory
           Dzero_memory(internal_data, sizeof(vulkan_geometry_data));
@@ -1050,6 +1050,10 @@ void vulkan_renderer_draw_geometry(geometry_render_data data, u32 value)
      }
      vulkan_geometry_data *buffer_data = &context.geometries[data.geo_obj->internal_id];
      vulkan_command_buffer *command_buffer = &context.graphics_command_buffers[context.image_index];
+     //temp_code
+       materials*default_m = material_system_get_default_material();
+       Texture*t = default_m->diffuse_map.texture;
+      //temp_code 
      // test code
      // binds the pipeline to the graphics bind point
      uniform_object ubo;
@@ -1068,6 +1072,7 @@ void vulkan_renderer_draw_geometry(geometry_render_data data, u32 value)
      ubo.model = data.model;
      ubo.diffuse_color = material->diffuse_color;
      ubo.shineness = material->shineness;
+     ubo.sample_count_less = material->sample_count_less;
      // applying the material
      material_shader shader;
      shader_system_get_shader_by_id(material->shader_id, &shader);
@@ -1094,17 +1099,18 @@ void vulkan_renderer_draw_geometry(geometry_render_data data, u32 value)
                   ubo_offset += size; 
           }
      }
-     Texture*textures[shader.config.sampler_count];
-     textures[0] = material->diffuse_map.texture;
-     textures[1] = material->specular_map.texture;
-     textures[2] = material->normal_map.texture;
      for (u32 i = 0; i < shader.config.sampler_count; i++)
      {
           u32 location;
           if (string_equal(shader.config.sampler_scope[i], "INSTANCE"))
           {
                     location = vulkan_shader_uniform_location(&context.shaders[internal_data->internal_id], shader.config.sampler_name[i]);
-                    vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id], location, textures[i]);
+                    if(material->texture_maps[i].texture){
+                          vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id], location, material->texture_maps[i].texture);
+                    }
+                    else{
+                         vulkan_shader_set_sampler(&context.shaders[internal_data->internal_id], location,t); 
+                    }      
           }
      }
      if(material->renderer_frame_number != value){
@@ -1168,7 +1174,7 @@ bool vulkan_create_material_shader(struct material_shader *shader)
           {
                if (string_equal(shader->config.renderpass, "mainrenderpass"))
                {
-                    if (!vulkan_shader_create(&context, shader->name, &context.main_renderpass, stages, 1024, shader->use_instance, shader->use_push_constants, &context.shaders[i]))
+                    if (!vulkan_shader_create(&context, shader->name, &context.main_renderpass, stages, shader->config.stage_file_names[0],shader->config.stage_file_names[1], 1024, shader->use_instance, shader->use_push_constants, &context.shaders[i]))
                     {
                          DERROR("vulkan failed to initialize internal_data for shader");
                          return false;
@@ -1250,8 +1256,7 @@ void set_uniform(vulkan_shader *shader, const char *type, u32 location, void*val
      }
      else if (string_equal(type, "i32"))
      {
-          int *internal_value = (int *)value;
-          vulkan_shader_set_uniform_i32(shader, location, *internal_value);
+          vulkan_shader_set_uniform_i32(shader, location, value);
      }
      else if (string_equal(type, "u8"))
      {

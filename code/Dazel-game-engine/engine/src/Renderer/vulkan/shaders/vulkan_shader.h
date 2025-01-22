@@ -155,7 +155,7 @@ struct Texture;
 //    vulkan_pipeline pipeline;
 // }vulkan_shader;
 
-bool vulkan_shader_create(vulkan_context *context, const char *name, vulkan_renderpass *renderpass, VkShaderStageFlags stages, u32 max_descriptor_set_count, bool use_instance, bool use_local, vulkan_shader *out_shader);
+bool vulkan_shader_create(vulkan_context *context, const char *name, vulkan_renderpass *renderpass, VkShaderStageFlags stages, const char*vertex_stage, const char*fragment_stage, u32 max_descriptor_set_count, bool use_instance, bool use_local, vulkan_shader *out_shader);
 
 bool vulkan_shader_destroy(vulkan_shader *shader);
 
@@ -211,7 +211,7 @@ bool set_uniform(vulkan_shader *shader, u32 location, void *value, u32 size);
 
 bool vulkan_shader_set_uniform_i16(vulkan_shader *shader, u32 location, i16 value);
 
-bool vulkan_shader_set_uniform_i32(vulkan_shader *shader, u32 location, int value);
+bool vulkan_shader_set_uniform_i32(vulkan_shader *shader, u32 location, void*value);
 
 bool vulkan_shader_set_uniform_u8(vulkan_shader *shader, u32 location, u8 value);
 

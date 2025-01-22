@@ -13,6 +13,9 @@ typedef struct geometry_config{
   u32 index_count;
   void*indicies;
   void*verticies;
+  vec3 min_extent;
+  vec3 max_extent;
+  vec3 center;
   char name[GEOMETRY_NAME_MAX_LENGTH];
   char material_name[MATERIAL_NAME_MAX_LENGTH];
   bool apply_material;
@@ -38,3 +41,6 @@ geometry*geometry_system_get_default_2d();
 geometry_config geometry_system_plane_config(float width, float height, u32 x_segment_count, u32 y_segment_count, float title_x, float title_y, const char*name, const char* material_name, bool apply_material);
 
 geometry_config geometry_system_generate_cube_config(float width, float height, float depth, float tile_x, float tile_y, const char*name, const char*material_name, bool apply_material);
+
+void geometry_system_config_dispose(geometry_config*config);
+

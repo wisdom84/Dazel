@@ -27,7 +27,7 @@ bool shader_uniform_add_state_valid(vulkan_shader *shader);
 bool uniform_add(vulkan_shader *shader, const char *uniform_name, u32 size, shader_scope scope, u32 *out_location, bool is_sampler);
 range get_aligned_range(u64 push_const_size, u32 size, u32 alignment_value);
 
-bool vulkan_shader_create(vulkan_context *context, const char *name, vulkan_renderpass *renderpass, VkShaderStageFlags stages, u32 max_descriptor_set_count, bool use_instance, bool use_local, vulkan_shader *out_shader)
+bool vulkan_shader_create(vulkan_context *context, const char *name, vulkan_renderpass *renderpass, VkShaderStageFlags stages, const char*vertex_stage, const char*fragment_stage,  u32 max_descriptor_set_count, bool use_instance, bool use_local, vulkan_shader *out_shader)
 {
     if (!context || !name || !out_shader)
     {
@@ -62,10 +62,10 @@ bool vulkan_shader_create(vulkan_context *context, const char *name, vulkan_rend
             switch (i)
             {
             case VK_SHADER_STAGE_VERTEX_BIT:
-                string_n_copy(stage_config.stage_str, "vert", 7);
+                string_n_copy(stage_config.stage_str, vertex_stage, 7);
                 break;
             case VK_SHADER_STAGE_FRAGMENT_BIT:
-                string_n_copy(stage_config.stage_str, "frag", 7);
+                string_n_copy(stage_config.stage_str, fragment_stage, 7);
                 break;
             default:
                 DERROR("vulkan_shader_create: Unsupported shader stage flag %d stage ignored", i);
@@ -838,10 +838,10 @@ bool vulkan_shader_set_uniform_i16(vulkan_shader *shader, u32 location, i16 valu
     return set_uniform(shader, location, &value, size);
 };
 
-bool vulkan_shader_set_uniform_i32(vulkan_shader *shader, u32 location, int value)
+bool vulkan_shader_set_uniform_i32(vulkan_shader *shader, u32 location, void*value)
 {
     u32 size = sizeof(int);
-    return set_uniform(shader, location, &value, size);
+    return set_uniform(shader, location, value, size);
 };
 
 bool vulkan_shader_set_uniform_u8(vulkan_shader *shader, u32 location, u8 value)

@@ -1,0 +1,18 @@
+#shader file
+version=0.1
+name=built_in_shader_1
+stage_count=2
+stage_names=vertex,fragment
+stage_file_names=vert_1,frag_1
+attribute_count=4
+renderpass=mainrenderpass
+uniform_count=8
+sampler_count=2
+attributes=type:FLOAT32_3|name:position,type:FLOAT32_2|name:textcoord,type:FLOAT32_3|name:normal,type:FLOAT32_4|name:tangent
+uniforms=type:mat4|scope:GLOBAL|name:projection,type:mat4|scope:GLOBAL|name:view,type:vec4|scope:GLOBAL|name:view_position,type:mat4|scope:LOCAL|name:model,type:vec4|scope:INSTANCE|name:diffuse_color,type:f32|scope:INSTANCE|name:shineness
+uniforms=type:vec4|scope:GLOBAL|name:ambient_color
+uniforms=type:u32|scope:GLOBAL|name:render_mode
+samplers=scope:INSTANCE|name:orange_lines_512
+samplers=scope:INSTANCE|name:normal
+use_instance=true
+use_local=true

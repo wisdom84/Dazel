@@ -2,6 +2,8 @@
 ECHO Compiling shaders 
 C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe shader.vert -V -o  cd/../../../../../../../bin/assets/shader_bin/vert.spv
 C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe shader.frag -V -o  cd/../../../../../../../bin/assets/shader_bin/frag.spv
+C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe shader_1.frag -V -o  cd/../../../../../../../bin/assets/shader_bin/frag_1.spv
+C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe shader_1.vert -V -o  cd/../../../../../../../bin/assets/shader_bin/vert_1.spv
 
 C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe UI_shader.vert -V -o cd/../../../../../../../bin/assets/shader_bin/UIvert.spv
 C:/VulkanSDK/1.3.275.0/Bin/glslangValidator.exe UI_shader.frag -V -o cd/../../../../../../../bin/assets/shader_bin/UIfrag.spv

@@ -19,6 +19,8 @@ using namespace dlm;
 #define MAX_UNIFORM_TYPE_NAME_LENGTH 128
 #define MAX_SAMPLER_TYPE_NAME_LENGTH 128
 
+#define MAX_MATERIAL_TEXTURE_MAPS 3
+
 enum resource_types{
   RESOURCE_TYPE_TEXT,
   RESOURCE_TYPE_BINARY,
@@ -60,6 +62,7 @@ typedef struct material_config{
     char normal_map_name[TEXTURE_NAME_MAX_LENGTH]; 
     char shader_name[SHADER_NAME_MAX_LENGTH];
     float shineness;
+    int sample_count_less;
 }material_config;
 
 typedef struct Texture{
@@ -94,9 +97,13 @@ typedef struct materials{
   u32 generations;
   vec4 diffuse_color;
   float shineness;
+  int sample_count_less;
+  // TODO: to phase this method out 
   texture_map diffuse_map;
   texture_map specular_map;
   texture_map normal_map;
+  // TODO:
+  texture_map texture_maps[MAX_MATERIAL_TEXTURE_MAPS];
   char name[MATERIAL_NAME_MAX_LENGTH];
   bool apply_material;
   u32 renderer_frame_number;
@@ -128,6 +135,7 @@ typedef struct material_shader_config{
     char renderpass[128];
     char shader_name[SHADER_NAME_MAX_LENGTH];
     char stage_names[4][MAX_STAGE_NAME_LENGTH];
+    char stage_file_names[4][MAX_STAGE_NAME_LENGTH];
     char attribute_names[MAX_ATTRIBUTE_COUNT][MAX_ATTRIBUTE_TYPE_NAME_LENGTH];
     char attribute_type[MAX_ATTRIBUTE_COUNT][MAX_ATTRIBUTE_TYPE_NAME_LENGTH];
     char uniform_names[MAX_UNIFORM_COUNT][MAX_UNIFORM_TYPE_NAME_LENGTH];

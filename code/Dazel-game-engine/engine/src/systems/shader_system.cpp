@@ -132,7 +132,8 @@ bool load_configuration_file(const char*shader_name,material_shader_config*confi
   string_data_tranfer(config->uniform_type, data->uniform_type);
   string_data_tranfer(config->sampler_name, data->sampler_name);
   string_data_tranfer(config->sampler_scope, data->sampler_scope);
-  string_data_tranfer(config->stage_names, data->stage_names); 
+  string_data_tranfer(config->stage_names, data->stage_names);
+  string_data_tranfer(config->stage_file_names, data->stage_file_names); 
   return true;
 }
 

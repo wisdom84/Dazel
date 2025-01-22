@@ -50,7 +50,7 @@ bool renderer_initialize(const char*application_name, struct platform_state*plat
 
    
       state_ptr->global_ubo.projection = mat4_perspective(45.0f,900.f/600.f,0.1f,1000.f);
-      state_ptr->global_ubo.view = mat4_transponse(mat4_homogeneous_translation(0.0f,0.0f,4.0f));
+      state_ptr->global_ubo.view = mat4_transponse(mat4_homogeneous_translation(0.0f,0.0f,25.0f));
       state_ptr->global_ubo.view =  mat4_inverse(state_ptr->global_ubo.view);
       state_ptr->global_ubo.ambient_color = vec4_create(0.25f, 0.25f,0.25f,1.0f);
       // UI shader projection and view 

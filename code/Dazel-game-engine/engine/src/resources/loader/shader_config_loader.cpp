@@ -71,8 +71,15 @@ void string_process( char*buffer_type,const char*characters, material_shader_con
         Dzero_memory(var_name,sizeof(char)*64);
         Dzero_memory(value,sizeof(char)*128);
     }
-    else{
-       store_string_data(characters,config->stage_names);
+    else if(string_equal(buffer_type,"stage_names") || string_equal(buffer_type,"stage_file_names")){
+
+         if(string_equal(buffer_type,"stage_names")){
+                   store_string_data(characters,config->stage_names);
+         }
+         else{
+               store_string_data(characters,config->stage_file_names);
+         }
+    
     }
   
  }
@@ -198,7 +205,7 @@ bool shader_config_loader_load(struct resource_loader*self, const char*name, res
              };
          }else if(string_equal(trimmed_var_name, "renderpass")){
               string_n_copy(resource_data->renderpass,trimmed_value,128);
-         }else if(string_equal(trimmed_var_name,"attributes") || string_equal(trimmed_var_name, "stage_names") || string_equal(trimmed_var_name,"uniforms") || string_equal(trimmed_var_name,"samplers")){
+         }else if(string_equal(trimmed_var_name,"attributes") || string_equal(trimmed_var_name, "stage_names") || string_equal(trimmed_var_name,"uniforms") || string_equal(trimmed_var_name,"samplers") || string_equal(trimmed_var_name,"stage_file_names")){
                char*symbol=",|";
                sub_division(trimmed_var_name,trimmed_value,symbol,symbol[0],0,string_length(symbol),func,resource_data);  
          }else if(string_equal(trimmed_var_name, "use_instance") || string_equal(trimmed_var_name, "use_local")){

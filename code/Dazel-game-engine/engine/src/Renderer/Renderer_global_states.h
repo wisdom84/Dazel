@@ -14,6 +14,7 @@ typedef struct uniform_object{
   mat4 model; 
   vec4 diffuse_color;
   float shineness;
+  int sample_count_less;
 }uniform_object;
 
 typedef struct sampler_uniform_object{

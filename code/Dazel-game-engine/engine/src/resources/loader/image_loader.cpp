@@ -1,6 +1,7 @@
 #include "image_loader.h"
 #include "loader_utils.h"
 #include "core/Dmemory.h"
+#include "platform/file_system.h"
 #include "core/Dstrings.h"
 #include "core/logger.h"
 #include "resources/resources.inl"
@@ -16,22 +17,36 @@ bool image_loader_load(struct resource_loader*self, const char*name, resource*ou
     const int  required_channel_count = 4;
     stbi_set_flip_vertically_on_load(true);
     char full_file_path[512];
-    string_format(full_file_path,format_str, resource_system_base_path(),self->type_path, name,".png");
+    #define IMAGE_EXTENSION_COUNT 3
+    bool found = false;
+    char*extension[IMAGE_EXTENSION_COUNT] = {".tga",".png",".jpg"};
+    for(u32 i =0; i < IMAGE_EXTENSION_COUNT; i++){
+        string_format(full_file_path,format_str, resource_system_base_path(),self->type_path, name,extension[i]);
+        if(filesystem_exists(full_file_path)){
+            found = true;
+            break;
+        }
+    }
+    if(!found){
+        DERROR("image resource loader failed to find file '%s' or with any supported extension ",full_file_path);
+        return false;
+    }
+    // string_format(full_file_path,format_str, resource_system_base_path(),self->type_path, name,".png");
 
 
     int width, height, channel_count;
     u8*data=stbi_load(full_file_path,&width,&height,&channel_count,required_channel_count);
     const char* fail_message = stbi_failure_reason();
-    if(fail_message){
-        DERROR("image resource loader failed to load file %s:%s", full_file_path, fail_message);
+    // if(fail_message){
+    //     DERROR("image resource loader failed to load file %s:%s", full_file_path, fail_message);
 
-        stbi__err(0,0);
+    //     stbi__err(0,0);
 
-        if(data){
-            stbi_image_free(data);
-        }
-        return false;
-    }
+    //     if(data){
+    //         stbi_image_free(data);
+    //     }
+    //     return false;
+    // }
     if(!data){
         DERROR("image resource loader failed to load file %s", full_file_path);
         return false;

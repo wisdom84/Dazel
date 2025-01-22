@@ -9,6 +9,10 @@ EXP u64 string_length(const char*str);
 
 EXP bool string_equal(const char* str0, const char* str1);
 
+EXP bool string_nequal(const char* str0, const char*str1, u64 length);
+
+EXP bool string_nequali(const char* str0, const char*str1, u64 length);
+
 EXP void string_format(char*formated_des, const char*format,...);
 
 EXP char* string_copy(char*dst, const char*source);
@@ -54,6 +58,24 @@ EXP bool string_to_bool(char* str, bool*b);
 EXP void string_empty(char*str);
 
 EXP bool char_isspace(char c);
+
+EXP void string_append_string(char*dest, const char*source, const char*append);
+
+EXP void string_append_int(char*dest, const char*source, i64 i);
+
+EXP void string_append_float(char*dest, const char*source, float f);
+
+EXP void string_append_bool(char*dest, const char*source, bool b);
+
+EXP void string_append_char(char*dest, const char*source, char c);
+
+EXP void string_directory_from_path(char*dest, const char*path);
+
+EXP void string_filename_from_path(char*dest, const char*path);
+
+EXP void string_filename_no_extension_from_path(char*dest, const char*path);
+
+EXP void string_remove_characters(char*str, char*characters, u32 number, char*dest);
 
 
 

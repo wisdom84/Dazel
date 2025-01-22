@@ -6,5 +6,6 @@ diffuse_map_name=paving2
 specular_map_name=paving2_SPEC
 normal_map_name=normal
 shineness=64.0
+sample_count_less=0;
 type=world
 shader_name=built_in_shader

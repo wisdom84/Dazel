@@ -105,7 +105,13 @@ bool material_loader_load(struct resource_loader*self, const char*name, resource
          }
          else if(string_equal(trimmed_var_name, "shader_name")){
             string_n_copy(resource_data->shader_name,trimmed_value,SHADER_NAME_MAX_LENGTH);
-         }  
+         } 
+        else if(string_equal(trimmed_var_name, "sample_count_less")){
+            if(!string_to_i32(trimmed_value,&resource_data->sample_count_less)){
+               DERROR("error parsing string to int  for sample_count_less %s at line %hu sample_count_less ", full_file_path, line_number);
+               resource_data->sample_count_less = 0;
+            }
+         } 
          Dzero_memory(line_buff, sizeof(char)*512);
          line_number++;
     }

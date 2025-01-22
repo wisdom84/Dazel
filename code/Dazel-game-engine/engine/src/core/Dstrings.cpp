@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-// #include <sstream>
 u64 string_length(const char*str){
     return strlen(str);
 }
@@ -22,6 +21,18 @@ u64 string_length(const char*str){
    }
    return false;
  }
+
+bool string_nequal(const char* str0, const char*str1, u64 length){
+  return strncmp(str0,str1,length);
+};
+
+bool string_nequali(const char* str0, const char*str1, u64 length){
+#if defined(__GNUC__)
+    return strncasecmp(str0,str1,length) == 0;
+#elif (defined _MSC_VER)
+     return _strnicmp(str0,str1,length) == 0;
+#endif         
+};
  
 void string_format(char*formated_des, const char*format,...){
     __builtin_va_list args_ptr;
@@ -93,10 +104,6 @@ void string_format(char*formated_des, const char*format,...){
    if(!str){
      return false;
    }
-  //  ss
-  //  for(u32 i=0; i < string_length(str); i++){
-       
-  //  }
    Dzero_memory(out_vec4, sizeof(vec4));
    int result = sscanf(str, "%f %f %f %f", &out_vec4->x, &out_vec4->y, &out_vec4->z, &out_vec4->w);
    return result != -1;
@@ -224,3 +231,83 @@ void string_empty(char*str){
    int value =  isspace(c);
    return (value != 0);
  };
+
+
+void string_append_string(char*dest, const char*source, const char*append){
+  sprintf(dest,"%s%s",source,append);
+};
+
+void string_append_int(char*dest, const char*source, i64 i){
+    sprintf(dest, "%s%lli",source,i);
+};
+
+void string_append_float(char*dest, const char*source, float f){
+    sprintf(dest, "%s%f",source,f);
+};
+
+void string_append_bool(char*dest, const char*source, bool b){
+    sprintf(dest, "%s%s",source, b?"true" : "false");
+};
+
+void string_append_char(char*dest, const char*source, char c){
+     sprintf(dest, "%s%c",source,c);
+};
+
+void string_directory_from_path(char*dest, const char*path){
+    u64 length = strlen(path);
+    for(int i=length; i >= 0; --i){
+       char c = path[i];
+       if(c == '/' || c == '\\'){
+        strncpy(dest, path, i+1);
+        return;
+       }
+    }
+};
+
+void string_filename_from_path(char*dest, const char*path){
+    u64 length = strlen(path);
+    for(int i=length; i >= 0; --i){
+       char c = path[i];
+       if(c == '/' || c == '\\'){
+        strcpy(dest, path + i + 1);
+        return;
+       }
+    }
+};
+
+void string_filename_no_extension_from_path(char*dest, const char*path){
+   u64 length = strlen(path);
+   u64 start = 0;
+   u64 end = 0;
+   for(int i = length; i >= 0; --i){
+      char c = path[i];
+      if(end == 0 && c == '.'){
+        end = i;
+      }
+      if(start == 0 && (c == '/' || c == '\\')){
+        start = i + 1;
+        break;
+      }
+   }
+   string_mid(dest, path, start, end-start);
+};
+
+void string_remove_characters(char*str, char*characters, u32 number, char*dest){
+  // if(!str){
+  //   DWARNING("reading invalid pointer or address to strings");
+  //   return; 
+  // }
+  // char*p = &dest[0];
+  // char*ps = &str[0];
+  // for(u32 i=0; i < number; i++){
+  //   char c = characters[i];
+  //   while(*ps){
+  //       if(*ps != c){
+  //         *p = *ps;
+  //          p++;
+  //       }
+  //         ps++;
+  //     }
+  //     ps = &str[0];
+  // }
+}
