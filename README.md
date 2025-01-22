@@ -38,3 +38,7 @@ Note: This isn't an exhaustive list. There are more features that we will suppor
 Conclusion : It has been fun and challenging building this project but i a really greatfull for chosing this path of computer graphics as it is a lot important not only 
 in games but in other multimedia content all around the globe in different spheres of profession. So join on the facinating journey of building a virtual world of our
 own from the principles of math and physics that governs our currnet reality 
+
+Note: To run the project you have to have vulkan installed on your machine and add the path to your machines enviromental path. Then build the code on VS Code using the batch files that are available on in the code base. Please make sure you set the build for the code to use the batch files from the code base. inorder for the shaders to
+compile along side the compilation of the c++ code ( the vulkan sdk folder should be installed on the C drive of you machine "C:/VulkanSDK/1.3.275.0/" th path here is the 
+exact way it is meant to be on your machine. please take note of the version of vulkan been used  "1.3.275.0" a different version might cause issues while compiling the shaders. 
