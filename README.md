@@ -42,3 +42,6 @@ own from the principles of math and physics that governs our current reality.
 Note: To run the project you have to have vulkan installed on your machine and add the path to your machines enviromental path. Then build the code on VS Code using the batch files that are available  in the code base. Please make sure you set the build for the code to use the batch files from the code base  inorder for the shaders to
 compile along side the compilation of the c++ code ( the vulkan sdk folder should be installed on the C drive of you machine,"C:/VulkanSDK/1.3.275.0/" the path here is the 
 exact way it is meant to be on your machine. please take note of the version of vulkan been used  "1.3.275.0" a different version might cause issues while compiling the shaders. 
+
+![image](https://github.com/user-attachments/assets/47a1627a-bcf9-4ea1-9a84-74aeb64b8b29)
+please use the link to view the pictures of the application 
